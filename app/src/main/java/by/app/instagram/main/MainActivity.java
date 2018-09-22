@@ -20,21 +20,29 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
+import android.widget.ProgressBar;
 
 import by.app.instagram.R;
 import by.app.instagram.contracts.GeneralContract;
 import by.app.instagram.db.Prefs;
 import by.app.instagram.main.contracts.MainContract;
 import by.app.instagram.main.fragments.FragmentLogin;
+import by.app.instagram.main.fragments.UserInfoFragment;
+import by.app.instagram.main.presenters.MainPresenter;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,
-        GeneralContract, MainContract.ViewModel{
+        implements NavigationView.OnNavigationItemSelectedListener, MainContract.ViewModel{
 
     private static final String TAG = "Main";
     Context v;
     Toolbar toolbar;
     Fragment fragment = null;
+    DrawerLayout drawer;
+    ActionBarDrawerToggle toggle;
+    NavigationView navigationView;
+    ProgressBar progressBar;
+
+    MainPresenter _presenter;
 
     Prefs prefs;
 
@@ -45,27 +53,12 @@ public class MainActivity extends AppCompatActivity
 
         v = this;
         prefs = new Prefs(this);
+        progressBar = findViewById(R.id.progress);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        if(_presenter == null) _presenter = new MainPresenter(this, this);
 
         checkLogin();
     }
@@ -78,6 +71,12 @@ public class MainActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onPostResume() {
+        //checkLogin();
+        super.onPostResume();
     }
 
     @Override
@@ -153,19 +152,20 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void showProgress() {
-
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideProgress() {
-
+        progressBar.setVisibility(View.GONE);
     }
 
     @Override
     public void checkLogin() {
 
         if(!prefs.isLoginInsta() || !prefs.isLoginPopster()) initLoginFragment();
-        else initView();
+        else if(prefs.isLoginApi()) initView();
+        else loginApi();
 
     }
 
@@ -208,6 +208,33 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void initView() {
+
+        try {
+            drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            toggle = new ActionBarDrawerToggle(
+                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+            drawer.addDrawerListener(toggle);
+            toggle.syncState();
+
+            navigationView = (NavigationView) findViewById(R.id.nav_view);
+            navigationView.setNavigationItemSelectedListener(this);
+
+            fragment = new UserInfoFragment(MainActivity.this);
+            if(fragment != null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, fragment)
+                        .commit();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void loginApi() {
+
+        _presenter.setLoginUser();
 
     }
 }

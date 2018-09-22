@@ -8,5 +8,15 @@
     <string name="action_settings">Settings</string>
     <string name="err_connection_internet">Нет подключения к интернету....</string>
     <string name="suc_connection_internet">Соединение восстановлено</string>
+    <string name="follow">Подписки</string>
+    <string name="followers_by">Подписчики</string>
+    <string name="post">Публикации</string>
+    <string name="photo">Фото</string>
+    <string name="slider">Слайдер</string>
+    <string name="video">Видео</string>
+    <string name="likes">Лайки</string>
+    <string name="comments">Комменты</string>
+    <string name="views">Простотры</string>
+    <string name="activity">Активность</string>
 
 </resources>

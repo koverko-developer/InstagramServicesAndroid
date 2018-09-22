@@ -1,6 +1,7 @@
 package by.app.instagram.db;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.design.widget.Snackbar;
 
@@ -15,6 +16,7 @@ public class Prefs {
     private static final String APP_PREFERENCES_L_Popster = "l_popster";
     private static final String APP_PREFERENCES_L_Cookie = "l_cookie";
     private static final String APP_PREFERENCES_L_Token = "l_token";
+    private static final String APP_PREFERENCES_L_Api = "l_api";
     private SharedPreferences mSettings;
 
     public Prefs(Context context) {
@@ -47,7 +49,7 @@ public class Prefs {
     }
 
     public String  getLToken(){
-        return mSettings.getString(APP_PREFERENCES_L_Token,"0");
+        return mSettings.getString(APP_PREFERENCES_L_Token,"0").split("=")[1];
     }
 
     public void setLCookie(String id){
@@ -62,9 +64,26 @@ public class Prefs {
         editor.apply();
     }
 
+    public void setLApi(String id){
+        SharedPreferences.Editor editor = mSettings.edit();
+        editor.putString(APP_PREFERENCES_L_Api, id);
+        editor.apply();
+    }
+
+    public Long getLApi(){
+        return Long.parseLong(mSettings.getString(APP_PREFERENCES_L_Api,"0"));
+    }
+
     public boolean isLoginInsta(){
 
         if(getLInsta() == 0) return false;
+        else return true;
+
+    }
+
+    public boolean isLoginApi(){
+
+        if(getLApi() == 0) return false;
         else return true;
 
     }

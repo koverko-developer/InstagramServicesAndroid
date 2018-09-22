@@ -6,9 +6,11 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -48,6 +50,7 @@ public class FragmentLogin extends Fragment implements LoginContract.ViewModel,G
     }
 
     Runnable internet = new Runnable() {
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         @Override
         public void run() {
             if(!isConnect) checkInternetConnection();
@@ -94,7 +97,8 @@ public class FragmentLogin extends Fragment implements LoginContract.ViewModel,G
                     String cookies = CookieManager.getInstance().getCookie(url);
                     Log.d(TAG, "All the cookies in a string:" + cookies);
                     prefs.setLInsta("1");
-                    prefs.setLCookie(cookie);
+                    String sesid = cookie.split("sessionid=")[1].split(";")[0];
+                    prefs.setLCookie(sesid);
                     initWVLoginPopster();
                 }
 
@@ -120,6 +124,7 @@ public class FragmentLogin extends Fragment implements LoginContract.ViewModel,G
                 showProgress();
             }
 
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             public void onPageFinished(WebView view, String url) {
 
                 hideProgress();
@@ -153,11 +158,13 @@ public class FragmentLogin extends Fragment implements LoginContract.ViewModel,G
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void checkInternetConnection() {
         ConnectivityManager connMgr = (ConnectivityManager)
                 v.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
 
         if (networkInfo != null && networkInfo.isConnected()) {
             isConnect = true;

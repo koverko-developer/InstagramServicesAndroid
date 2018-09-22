@@ -7,9 +7,16 @@ public interface MainContract {
         void initLoginFragment();
         void exit();
         void initView();
+        void loginApi();
+        void checkInternetConnection();
+        void showNoConnectionMessage();
+        void connectSucsefull();
+        void showProgress();
+        void hideProgress();
     }
 
     interface Presenter {
-
+        void setLoginUser();
+        void checkInternetConnection();
     }
 }
