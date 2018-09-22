@@ -225,6 +225,8 @@ public class MainActivity extends AppCompatActivity
                         .replace(R.id.container, fragment)
                         .commit();
             }
+
+            toolbar.setVisibility(View.GONE);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,8 +1,10 @@
 package by.app.instagram.api;
 
+import java.util.List;
 import java.util.Map;
 
 import by.app.instagram.model.fui.UserInfoMedia;
+import by.app.instagram.model.fui.UserInfoTop;
 import okhttp3.ResponseBody;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
@@ -23,5 +25,13 @@ public interface IInstagramApi {
     @POST("/users/{id}/media/info")
     @FormUrlEncoded
     Observable<UserInfoMedia> getUserInfoMedia(@Path("id") String user_id, @FieldMap Map<String, String> map);
+
+    @POST("/top/{id}/likes")
+    @FormUrlEncoded
+    Observable<List<UserInfoTop>> getUserTopLikers(@Path("id") String user_id, @FieldMap Map<String, String> map);
+
+    @POST("/top/{id}/comments")
+    @FormUrlEncoded
+    Observable<List<UserInfoTop>> getUserTopComments(@Path("id") String user_id, @FieldMap Map<String, String> map);
 
 }

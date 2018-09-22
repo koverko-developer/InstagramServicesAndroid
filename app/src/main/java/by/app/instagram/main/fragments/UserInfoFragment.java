@@ -1,5 +1,6 @@
 package by.app.instagram.main.fragments;
 
+import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
@@ -7,6 +8,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +18,18 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+
+import java.util.List;
 
 import by.app.instagram.R;
+import by.app.instagram.adapter.TopCommentsUsersAdapter;
+import by.app.instagram.adapter.TopLikerUsersAdapter;
 import by.app.instagram.main.contracts.UserInfoContract;
 import by.app.instagram.main.presenters.UserInfoPresenter;
 import by.app.instagram.model.fui.UserInfoMedia;
+import by.app.instagram.model.fui.UserInfoTop;
 import by.app.instagram.model.vk.VKUserInfo;
 
 @SuppressLint("ValidFragment")
@@ -31,8 +41,13 @@ public class UserInfoFragment extends Fragment implements UserInfoContract.ViewM
     TextView tv_followed_by, tv_follows, tv_count_photo, tv_count_slider, tv_count_video,
              tv_count_likes, tv_count_comments, tv_count_views;
     ImageView img_ava;
-    CardView card_h, card_2, card_3;
+    CardView card_h, card_2, card_3, card_4, card_5;
+    RecyclerView rec_top_likers, rec_top_comments;
+    CardView progress;
+
     UserInfoPresenter _presenter;
+
+    private LinearLayoutManager mLayoutManager;
 
     public UserInfoFragment(Context context) {
         this.context = context;
@@ -46,6 +61,8 @@ public class UserInfoFragment extends Fragment implements UserInfoContract.ViewM
         initCardViewUI();
         initCardViewMediaUI();
         initCardViewMedia2UI();
+        initCardViewMedia3UI();
+        initCardViewMedia4UI();
         if(_presenter == null) _presenter = new UserInfoPresenter(v.getContext(), this);
 
         return v;
@@ -64,6 +81,7 @@ public class UserInfoFragment extends Fragment implements UserInfoContract.ViewM
         tv_follows = v.findViewById(R.id.follows);
         img_ava = v.findViewById(R.id.ava);
 
+        cardAnimation(card_h, Techniques.BounceInDown);
     }
 
     @Override
@@ -74,6 +92,7 @@ public class UserInfoFragment extends Fragment implements UserInfoContract.ViewM
         tv_count_video = v.findViewById(R.id.count_video);
         tv_count_slider = v.findViewById(R.id.count_slider);
 
+        cardAnimation(card_2, Techniques.SlideInLeft);
     }
 
     @Override
@@ -82,6 +101,21 @@ public class UserInfoFragment extends Fragment implements UserInfoContract.ViewM
         tv_count_likes = v.findViewById(R.id.count_likes);
         tv_count_comments = v.findViewById(R.id.count_comments);
         tv_count_views = v.findViewById(R.id.count_views);
+        cardAnimation(card_3, Techniques.SlideInRight);
+    }
+
+    @Override
+    public void initCardViewMedia3UI() {
+        card_4 = v.findViewById(R.id.card_h4);
+        rec_top_likers = v.findViewById(R.id.rec_top_likers);
+        cardAnimation(card_4, Techniques.BounceInUp);
+    }
+
+    @Override
+    public void initCardViewMedia4UI() {
+        card_5 = v.findViewById(R.id.card_h4);
+        rec_top_comments = v.findViewById(R.id.rec_top_comments);
+        card_5.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -104,6 +138,9 @@ public class UserInfoFragment extends Fragment implements UserInfoContract.ViewM
         if(follows != 0) {
             tv_follows.setText(String.valueOf(follows));
         }
+
+        textAnimation(tv_follows);
+        textAnimation(tv_followed_by);
     }
 
     @Override
@@ -113,12 +150,104 @@ public class UserInfoFragment extends Fragment implements UserInfoContract.ViewM
         tv_count_slider.setText(String.valueOf(media.getCount_corousel()));
         tv_count_video.setText(String.valueOf(media.getCount_video()));
 
+        textAnimation(tv_count_photo);
+        textAnimation(tv_count_slider);
+        textAnimation(tv_count_video);
     }
 
     @Override
     public void addCardViewMedia2Info(UserInfoMedia media) {
+
         tv_count_likes.setText(String.valueOf(media.getCount_like()));
         tv_count_comments.setText(String.valueOf(media.getCount_comments()));
         tv_count_views.setText(String.valueOf(media.getCount_view()));
+    }
+
+    @Override
+    public void addCardViewMedia3Info(List<UserInfoTop> list) {
+
+        TopLikerUsersAdapter adapter = new TopLikerUsersAdapter(list, v.getContext());
+        mLayoutManager = new LinearLayoutManager(v.getContext());
+        mLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        rec_top_likers.setLayoutManager(mLayoutManager);
+        rec_top_likers.setAdapter(adapter);
+
+    }
+
+    @Override
+    public void addCardViewMedia4Info(List<UserInfoTop> list) {
+
+        TopCommentsUsersAdapter adapter = new TopCommentsUsersAdapter(list, v.getContext());
+        mLayoutManager = new LinearLayoutManager(v.getContext());
+        mLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        rec_top_comments.setLayoutManager(mLayoutManager);
+        rec_top_comments.setAdapter(adapter);
+
+    }
+
+    @Override
+    public void cardAnimation(View view, Techniques techniques) {
+
+        if(view.getVisibility() == View.GONE){
+            YoYo.with(techniques).duration(1000).withListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animator) {
+                    view.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animator) {
+
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animator) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animator) {
+
+                }
+            }).playOn(view);
+        }
+
+    }
+
+    @Override
+    public void textAnimation(View v) {
+        YoYo.with(Techniques.Landing).duration(2000).withListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animator) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animator) {
+
+            }
+        }).playOn(v);
+    }
+
+    @Override
+    public void hideProgress() {
+
+        progress = v.findViewById(R.id.progress);
+        progress.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showProgress() {
+        progress = v.findViewById(R.id.progress);
+        progress.setVisibility(View.VISIBLE);
     }
 }
