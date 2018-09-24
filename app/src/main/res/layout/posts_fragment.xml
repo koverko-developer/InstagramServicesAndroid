@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/progress"></include>
+
+    <include
+        android:id="@+id/rel_header"
+        layout="@layout/custom_bar"></include>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/rel_header"
+        android:orientation="vertical">
+
+        <include layout="@layout/posts_h1"></include>
+
+        <include layout="@layout/info_card_3"></include>
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/chartLikes"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="8dp"></com.github.mikephil.charting.charts.LineChart>
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="200dp">
+
+
+
+        </HorizontalScrollView>
+    </LinearLayout>
+
+</RelativeLayout>

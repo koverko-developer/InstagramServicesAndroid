@@ -22,5 +22,6 @@
     <string name="top_comments">Топ комментаторов</string>
     <string name="please_wait">Пожалуйста, подождите.</string>
     <string name="load_data">Идет загрузка данных...</string>
+    <string name="all">ВСЕ</string>
 
 </resources>

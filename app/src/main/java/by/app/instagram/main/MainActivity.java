@@ -22,11 +22,14 @@ import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.widget.ProgressBar;
 
+import java.util.Map;
+
 import by.app.instagram.R;
 import by.app.instagram.contracts.GeneralContract;
 import by.app.instagram.db.Prefs;
 import by.app.instagram.main.contracts.MainContract;
 import by.app.instagram.main.fragments.FragmentLogin;
+import by.app.instagram.main.fragments.FragmentPosts;
 import by.app.instagram.main.fragments.UserInfoFragment;
 import by.app.instagram.main.presenters.MainPresenter;
 
@@ -219,7 +222,8 @@ public class MainActivity extends AppCompatActivity
             navigationView = (NavigationView) findViewById(R.id.nav_view);
             navigationView.setNavigationItemSelectedListener(this);
 
-            fragment = new UserInfoFragment(MainActivity.this);
+//            fragment = new UserInfoFragment(MainActivity.this);
+            fragment = new FragmentPosts(MainActivity.this);
             if(fragment != null) {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.container, fragment)

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import by.app.instagram.model.fui.UserInfoMedia;
 import by.app.instagram.model.fui.UserInfoTop;
+import by.app.instagram.model.pui.PostsInfo;
 import okhttp3.ResponseBody;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
@@ -33,5 +34,9 @@ public interface IInstagramApi {
     @POST("/top/{id}/comments")
     @FormUrlEncoded
     Observable<List<UserInfoTop>> getUserTopComments(@Path("id") String user_id, @FieldMap Map<String, String> map);
+
+    @POST("/posts/{id}/")
+    @FormUrlEncoded
+    Observable<PostsInfo> getPostsInfo(@Path("id") String user_id, @FieldMap Map<String, String> map);
 
 }
