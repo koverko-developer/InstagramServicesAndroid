@@ -60,4 +60,27 @@ public class ChartItem {
     public void setCountViews(int countViews) {
         this.countViews = countViews;
     }
+
+    public void setAllValue(int _mediaType, String _date, int _countsLikes,
+                            int _countComments, int _countViews){
+
+        this.mediaType = _mediaType;
+        this.dates = _date;
+        this.countsLikes = _countsLikes;
+        this.countComments = _countComments;
+        this.countViews = _countViews;
+
+    }
+
+    public void addCountLikes(int col){
+        this.countsLikes = this.countsLikes + col;
+    }
+
+    public void addCountComments(int col){
+        this.countComments = this.countComments + col;
+    }
+
+    public void addCountViews(int col){
+        this.countViews = this.countViews + col;
+    }
 }
