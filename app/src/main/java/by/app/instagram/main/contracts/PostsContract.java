@@ -1,6 +1,7 @@
 package by.app.instagram.main.contracts;
 
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.View;
 
 import com.github.mikephil.charting.data.Entry;
@@ -12,6 +13,7 @@ import java.util.List;
 import by.app.instagram.enums.TypePosts;
 import by.app.instagram.model.fui.UserInfoMedia;
 import by.app.instagram.model.pui.ChartItem;
+import by.app.instagram.view.filter.TypeSpinnerFilter;
 
 public class PostsContract {
 
@@ -19,6 +21,11 @@ public class PostsContract {
         void initChart();
         void initCardH();
         void initCardTypeMedia();
+        void initChartLikes();
+        void initChartComments();
+        void initChartViews();
+        void initFilter();
+        void initAppBar();
         void cardAnimation(View v);
         void setValueToCardH(UserInfoMedia media);
         void setInfoSortTypePost(UserInfoMedia media);
@@ -27,8 +34,12 @@ public class PostsContract {
         void animText(View v);
         void showProgress();
         void hideProgress();
+        void hideFilter();
+        void showFilter();
         void addDataToChartLikes(List<ChartItem> list);
         LineDataSet getDataSet(ArrayList<Entry> entryArrayList);
+        void addToValueToLineView(List<ChartItem> list);
+        void animRotate(View view, int type);
     }
 
     public interface Presenter {
@@ -36,6 +47,10 @@ public class PostsContract {
         void getPostsInfo();
         void checkMediaRange(Long count_media);
         void sortTypeMedia(TypePosts typePosts);
+        void setTypeSpinnerFilter(TypeSpinnerFilter typeSpinnerFilter);
+        void setCountsPosts(int _count);
+        void setPeriod1(Long _period1);
+        void setPeriod2(Long _perio2);
 
     }
 

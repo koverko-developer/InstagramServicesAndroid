@@ -63,7 +63,7 @@ public class FragmentLogin extends Fragment implements LoginContract.ViewModel,G
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
 
         v = inflater.inflate(R.layout.fragment_login, container, false);
-        h.post(internet);
+        //h.post(internet);
         return v;
     }
 

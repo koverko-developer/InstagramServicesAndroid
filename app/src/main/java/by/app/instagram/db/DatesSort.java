@@ -20,7 +20,7 @@ public class DatesSort {
         for (ChartItem chart : list
              ) {
              String m_date = chart.getDates().split("-")[0]+ "-"+
-                             chart.getDates().split("-")[1];
+                             chart.getDates().split("-")[1]+ " | ";
              if(!arrayList.contains(m_date)){
                  arrayList.add(m_date);
                  ChartItem chartItem = new ChartItem();
@@ -49,6 +49,93 @@ public class DatesSort {
         }
 
         Log.e(TAG, "dates arr string size= "+arrayList.size()+" list size = "+list.size());
+
+        return sort;
+    }
+
+    public List<ChartItem> getDatesFilterPhoto(List<ChartItem> list){
+        List<ChartItem> sort = new ArrayList<>();
+
+        ArrayList<String> arrayList = new ArrayList<>();
+
+        for (ChartItem chart : list
+                ) {
+            if(chart.getMediaType() == 1){
+                String m_date = chart.getDates().split("-")[0]+ "-"+
+                        chart.getDates().split("-")[1]+ " | ";
+                if(!arrayList.contains(m_date)){
+                    arrayList.add(m_date);
+                    ChartItem chartItem = new ChartItem();
+                    chartItem.setAllValue(chart.getMediaType(), m_date, chart.getCountsLikes(),
+                            chart.getCountComments(), chart.getCountViews());
+                    sort.add(chartItem);
+                }else {
+
+                    sort.get(sort.size() -1 ).addCountLikes(chart.getCountsLikes());
+                    sort.get(sort.size() -1 ).addCountComments(chart.getCountComments());
+                    sort.get(sort.size() -1 ).addCountViews(chart.getCountViews());
+                }
+            }
+
+        }
+
+        return sort;
+    }
+
+    public List<ChartItem> getDatesFilterVideo(List<ChartItem> list){
+        List<ChartItem> sort = new ArrayList<>();
+
+        ArrayList<String> arrayList = new ArrayList<>();
+
+        for (ChartItem chart : list
+                ) {
+            if(chart.getMediaType() == 2){
+                String m_date = chart.getDates().split("-")[0]+ "-"+
+                        chart.getDates().split("-")[1]+ " | ";
+                if(!arrayList.contains(m_date)){
+                    arrayList.add(m_date);
+                    ChartItem chartItem = new ChartItem();
+                    chartItem.setAllValue(chart.getMediaType(), m_date, chart.getCountsLikes(),
+                            chart.getCountComments(), chart.getCountViews());
+                    sort.add(chartItem);
+                }else {
+
+                    sort.get(sort.size() -1 ).addCountLikes(chart.getCountsLikes());
+                    sort.get(sort.size() -1 ).addCountComments(chart.getCountComments());
+                    sort.get(sort.size() -1 ).addCountViews(chart.getCountViews());
+                }
+            }
+
+        }
+
+        return sort;
+    }
+
+    public List<ChartItem> getDatesFilterSlider(List<ChartItem> list){
+        List<ChartItem> sort = new ArrayList<>();
+
+        ArrayList<String> arrayList = new ArrayList<>();
+
+        for (ChartItem chart : list
+                ) {
+            if(chart.getMediaType() == 8){
+                String m_date = chart.getDates().split("-")[0]+ "-"+
+                        chart.getDates().split("-")[1]+ " | ";
+                if(!arrayList.contains(m_date)){
+                    arrayList.add(m_date);
+                    ChartItem chartItem = new ChartItem();
+                    chartItem.setAllValue(chart.getMediaType(), m_date, chart.getCountsLikes(),
+                            chart.getCountComments(), chart.getCountViews());
+                    sort.add(chartItem);
+                }else {
+
+                    sort.get(sort.size() -1 ).addCountLikes(chart.getCountsLikes());
+                    sort.get(sort.size() -1 ).addCountComments(chart.getCountComments());
+                    sort.get(sort.size() -1 ).addCountViews(chart.getCountViews());
+                }
+            }
+
+        }
 
         return sort;
     }

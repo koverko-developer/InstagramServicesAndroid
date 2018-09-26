@@ -12,6 +12,7 @@ import java.util.Map;
 
 import by.app.instagram.api.ApiServices;
 import by.app.instagram.db.DatesSort;
+import by.app.instagram.db.PostFilterSort;
 import by.app.instagram.db.Prefs;
 import by.app.instagram.enums.TypePosts;
 import by.app.instagram.main.contracts.PostsContract;
@@ -20,6 +21,7 @@ import by.app.instagram.model.fui.UserInfoMedia;
 import by.app.instagram.model.pui.ChartItem;
 import by.app.instagram.model.pui.PostsInfo;
 import by.app.instagram.model.vk.VKUserInfo;
+import by.app.instagram.view.filter.TypeSpinnerFilter;
 import okhttp3.ResponseBody;
 import rx.Observable;
 import rx.Subscriber;
@@ -28,7 +30,7 @@ import rx.schedulers.Schedulers;
 
 public class PostsPresenter implements PostsContract.Presenter{
 
-    private static String TAG = PostsContract.class.getName();
+    private static String TAG = PostsPresenter.class.getName();
 
     PostsContract.ViewModel _view;
     Context context;
@@ -36,7 +38,12 @@ public class PostsPresenter implements PostsContract.Presenter{
     Prefs prefs;
 
     int count_feed_media = 0;
-    PostsInfo postInfo = new PostsInfo();
+    public PostsInfo postInfo = new PostsInfo();
+    private TypeSpinnerFilter typeSpinnerFilter = TypeSpinnerFilter.All;
+
+    private int count_posts;
+    private long period_1;
+    private long period_2;
 
     public PostsPresenter(PostsContract.ViewModel _view, Context context) {
         this._view = _view;
@@ -53,24 +60,38 @@ public class PostsPresenter implements PostsContract.Presenter{
         Observable<ResponseBody> observable = new ApiServices().getApi().getUserInfo(map);
         observable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(data -> {
-                    try {
-                        String resp = data.string();
-                        Gson gson = new Gson();
-                        if(resp.contains("error_type")){
-                            Meta meta = gson.fromJson(resp, Meta.class);
-                            String err = meta.getMeta().getErrorMessage();
-                            getUI();
-                        }else {
-                            VKUserInfo vkUserInfo
-                                    = gson.fromJson(resp, VKUserInfo.class);
-                            checkMediaRange(vkUserInfo.getmData().getmCounts().getMedia());
-                            getPostsInfo();
-                        }
+                .subscribe(new Subscriber<ResponseBody>() {
+                    @Override
+                    public void onCompleted() {
 
-                        String ds = resp;
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(ResponseBody responseBody) {
+                        ResponseBody data = responseBody;
+                        try {
+                            String resp = data.string();
+                            Gson gson = new Gson();
+                            if(resp.contains("error_type")){
+                                Meta meta = gson.fromJson(resp, Meta.class);
+                                String err = meta.getMeta().getErrorMessage();
+                                getUI();
+                            }else {
+                                VKUserInfo vkUserInfo
+                                        = gson.fromJson(resp, VKUserInfo.class);
+                                checkMediaRange(vkUserInfo.getmData().getmCounts().getMedia());
+                                getPostsInfo();
+                            }
+
+                            String ds = resp;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
     }
@@ -104,8 +125,8 @@ public class PostsPresenter implements PostsContract.Presenter{
                                   _view.hideProgress();
                                   if(data.getUserInfoMedia() != null){
                                       _view.setValueToCardH(data.getUserInfoMedia());
-                                      _view.addDataToChartLikes(new DatesSort().getDatesFilterAll(data.getChartArr()));
-
+                                      //_view.addDataToChartLikes(new DatesSort().getDatesFilterAll(data.getChartArr()));
+                                      _view.addToValueToLineView(new DatesSort().getDatesFilterAll(data.getChartArr()));
                                       postInfo = data;
                                   }
 
@@ -140,6 +161,11 @@ public class PostsPresenter implements PostsContract.Presenter{
     @Override
     public void sortTypeMedia(TypePosts typePosts) {
 
+        Log.e(TAG, "type spinner = "+ typeSpinnerFilter.toString());
+        Log.e(TAG, "count posts = " + count_posts);
+        Log.e(TAG, "period 1 = " + period_1);
+        Log.e(TAG, "period 2 = " + period_2);
+
         UserInfoMedia media = new UserInfoMedia();
 
         int col_comments = 0;
@@ -155,28 +181,71 @@ public class PostsPresenter implements PostsContract.Presenter{
 
         if(postInfo != null){
 
-            for (ChartItem item :postInfo.getChartArr()
-                 ) {
+            List<ChartItem> chartItemList = postInfo.getChartArr();
 
-                if(typeMedia == -1){
-                    col_likes += item.getCountsLikes();
-                    col_comments += item.getCountComments();
-                    col_views += item.getCountViews();
-                }else if(item.getMediaType() == typeMedia){
-                    col_likes += item.getCountsLikes();
-                    col_comments += item.getCountComments();
-                    col_views += item.getCountViews();
+            if(typeSpinnerFilter == TypeSpinnerFilter.All){
+            }
+            else if(typeSpinnerFilter == TypeSpinnerFilter.CurrentMonth) {
+                chartItemList = PostFilterSort.getCurrentMonth(postInfo.getChartArr());
+            }else if(typeSpinnerFilter == TypeSpinnerFilter.SelectMonth){
+                chartItemList = PostFilterSort.getSelectedMonth(postInfo.getChartArr(),
+                        period_1, period_2);
+            }else if(typeSpinnerFilter == TypeSpinnerFilter.CountPosts){
+                chartItemList = PostFilterSort.getCountsPosts(postInfo.getChartArr(), count_posts);
+            }
+
+            if(chartItemList != null) {
+                for (ChartItem item : chartItemList
+                        ) {
+
+                    if(typeMedia == -1){
+                        col_likes += item.getCountsLikes();
+                        col_comments += item.getCountComments();
+                        col_views += item.getCountViews();
+                    }else if(item.getMediaType() == typeMedia){
+                        col_likes += item.getCountsLikes();
+                        col_comments += item.getCountComments();
+                        col_views += item.getCountViews();
+                    }
+
                 }
+
+                media.setCount_view(col_views);
+                media.setCount_like(col_likes);
+                media.setCount_comments(col_comments);
+
+                _view.setInfoSortTypePost(media);
+
+                if(typePosts == TypePosts.Photo) _view.addToValueToLineView(new DatesSort().getDatesFilterPhoto(chartItemList));
+                else if(typePosts == TypePosts.Video) _view.addToValueToLineView(new DatesSort().getDatesFilterVideo(chartItemList));
+                else if(typePosts == TypePosts.Slider) _view.addToValueToLineView(new DatesSort().getDatesFilterSlider(chartItemList));
+                else _view.addToValueToLineView(new DatesSort().getDatesFilterAll(chartItemList));
 
             }
 
-            media.setCount_view(col_views);
-            media.setCount_like(col_likes);
-            media.setCount_comments(col_comments);
 
-            _view.setInfoSortTypePost(media);
         }
 
+    }
+
+    @Override
+    public void setTypeSpinnerFilter(TypeSpinnerFilter _typeSpinnerFilter) {
+        typeSpinnerFilter = _typeSpinnerFilter;
+    }
+
+    @Override
+    public void setCountsPosts(int _count) {
+        count_posts = _count;
+    }
+
+    @Override
+    public void setPeriod1(Long _period1) {
+        period_1 = _period1;
+    }
+
+    @Override
+    public void setPeriod2(Long _period2) {
+        period_2 = _period2;
     }
 
 

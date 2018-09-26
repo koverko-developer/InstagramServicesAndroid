@@ -23,5 +23,15 @@
     <string name="please_wait">Пожалуйста, подождите.</string>
     <string name="load_data">Идет загрузка данных...</string>
     <string name="all">ВСЕ</string>
-
+    <string name="apply">Применить</string>
+    <string name="cancel">Отмена</string>
+    <string name="current_month">За последний (текущий) месяц</string>
+    <string name="all_months">Весь период</string>
+    <string name="select_months">Выбранный период</string>
+    <string name="count_posts">Количество публикаций</string>
+    <string name="posts_fragment">Публикации</string>
+    <string name="period_1">С периода</string>
+    <string name="period_2">По период</string>
+    <string name="select_date">Выбрать дату</string>
+    <string name="inpunt_count_posts_hint">Введито кол-во постов...</string>
 </resources>
