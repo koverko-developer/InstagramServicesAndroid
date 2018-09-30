@@ -34,4 +34,16 @@
     <string name="period_2">По период</string>
     <string name="select_date">Выбрать дату</string>
     <string name="inpunt_count_posts_hint">Введито кол-во постов...</string>
+    <string name="empty_list">Ничего не найдено...</string>
+    <string name="follows">Подписки</string>
+    <string name="unfollows">Отписки</string>
+    <string name="graph_follows">График подписок</string>
+    <string name="graph_unfollows">График отписок</string>
+    <string name="who_follows">Кто подписался</string>
+    <string name="who_unfollows">Кто отписался</string>
+    <string name="audience_fragment">Аудитория</string>
+    <string name="update_data">Обновить данные?</string>
+    <string name="yes">ДА</string>
+    <string name="audience_no_follow_or_unfollow">На данный момент от Вас никто не откисался/подписался, как только это произойдет - Вы сразу увидите!</string>
+
 </resources>

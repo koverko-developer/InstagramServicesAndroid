@@ -155,6 +155,49 @@ public class FilterView extends RelativeLayout implements IFilterView.View {
     }
 
     @Override
+    public void initSpinnerPosts() {
+        try {
+            String[] spinArr = new String[]{
+                    getResources().getString(R.string.all_months),
+                    getResources().getString(R.string.current_month),
+                    getResources().getString(R.string.select_months)
+            };
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, spinArr);
+
+            spinner.setAdapter(adapter);
+            typeSpinnerFilter = TypeSpinnerFilter.All;
+
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    switch (i){
+                        case 0:
+                            typeSpinnerFilter = TypeSpinnerFilter.All;
+                            break;
+                        case 1:
+                            typeSpinnerFilter = TypeSpinnerFilter.CurrentMonth;
+                            break;
+                        case 2:
+                            typeSpinnerFilter = TypeSpinnerFilter.SelectMonth;
+                            break;
+                    }
+                    Log.e(TAG, "select spinner = "+ typeSpinnerFilter.toString());
+                    updateContentFilter();
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
+            String d ="";
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void initClickListener() {
         rel_period_1.setOnClickListener(new OnClickListener() {
             @Override
@@ -239,7 +282,9 @@ public class FilterView extends RelativeLayout implements IFilterView.View {
 
     @Override
     public void updateFilter() {
-        if(typeFilter == TypeFilter.Posts) initSpinnerDefault();
+        if(typeFilter == TypeFilter.Feed) initSpinnerDefault();
+        else if(typeFilter == TypeFilter.Posts) initSpinnerPosts();
+        else if(typeFilter == TypeFilter.Auditory) initSpinnerPosts();
     }
 
     @Override

@@ -19,6 +19,7 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -519,14 +520,14 @@ public class FragmentPosts extends Fragment implements PostsContract.ViewModel,
     @Override
     public void addToValueToLineView(List<ChartItem> list) {
 
-        try {
+        if(list != null && list.size() != 0){
             ArrayList<String> dates = new ArrayList<>();
             ArrayList<Integer> listLikes = new ArrayList<>();
             ArrayList<Integer> listComments = new ArrayList<>();
             ArrayList<Integer> listViews = new ArrayList<>();
 
             for (ChartItem item:list
-                 ) {
+                    ) {
                 dates.add(item.getDates());
                 listLikes.add(item.getCountsLikes());
                 listComments.add(item.getCountComments());
@@ -548,9 +549,7 @@ public class FragmentPosts extends Fragment implements PostsContract.ViewModel,
             chartLikes.setDataList(arrLikes);
             chartComments.setDataList(arrComments);
             chartViews.setDataList(arrViews);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        }else Toast.makeText(context, getResources().getString(R.string.empty_list),Toast.LENGTH_SHORT).show();
 
 
     }

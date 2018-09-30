@@ -54,7 +54,7 @@ public class PostFilterSort {
 
                 Log.e(TAG, "item date long = " + millis + " period_1 = "+ period_1);
 
-                if(millis >= period_1 && millis <= period_2) sortList.add(item);
+                if(item.getTakenAt() >= period_1 && item.getTakenAt() <= period_2) sortList.add(item);
 
             } catch (ParseException e) {
                 e.printStackTrace();

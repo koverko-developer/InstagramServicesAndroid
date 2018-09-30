@@ -15,11 +15,17 @@ public class ChartItem {
     @SerializedName("countsLikes")
     public int countsLikes;
 
+    @SerializedName("count")
+    public int count;
+
     @SerializedName("countComments")
     public int countComments;
 
     @SerializedName("countViews")
     public int countViews;
+
+    @SerializedName("takenAt")
+    public Long takenAt;
 
     public int getMediaType() {
         return mediaType;
@@ -82,5 +88,21 @@ public class ChartItem {
 
     public void addCountViews(int col){
         this.countViews = this.countViews + col;
+    }
+
+    public Long getTakenAt() {
+        return takenAt;
+    }
+
+    public void setTakenAt(Long takenAt) {
+        this.takenAt = takenAt;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 }

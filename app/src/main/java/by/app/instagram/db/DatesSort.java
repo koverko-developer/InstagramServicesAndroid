@@ -19,19 +19,31 @@ public class DatesSort {
 
         for (ChartItem chart : list
              ) {
-             String m_date = chart.getDates().split("-")[0]+ "-"+
-                             chart.getDates().split("-")[1]+ " | ";
-             if(!arrayList.contains(m_date)){
+             if(list.size() <= 6){
+                 String m_date = chart.getDates().split("-")[0]+ "-"+
+                         chart.getDates().split("-")[1]+"-"+
+                         chart.getDates().split("-")[2] +" | ";
                  arrayList.add(m_date);
                  ChartItem chartItem = new ChartItem();
                  chartItem.setAllValue(chart.getMediaType(), m_date, chart.getCountsLikes(),
                          chart.getCountComments(), chart.getCountViews());
                  sort.add(chartItem);
-             }else {
 
-                 sort.get(sort.size() -1 ).addCountLikes(chart.getCountsLikes());
-                 sort.get(sort.size() -1 ).addCountComments(chart.getCountComments());
-                 sort.get(sort.size() -1 ).addCountViews(chart.getCountViews());
+             }else {
+                 String m_date = chart.getDates().split("-")[0]+ "-"+
+                         chart.getDates().split("-")[1]+ " | ";
+                 if(!arrayList.contains(m_date)){
+                     arrayList.add(m_date);
+                     ChartItem chartItem = new ChartItem();
+                     chartItem.setAllValue(chart.getMediaType(), m_date, chart.getCountsLikes(),
+                             chart.getCountComments(), chart.getCountViews());
+                     sort.add(chartItem);
+                 }else {
+
+                     sort.get(sort.size() -1 ).addCountLikes(chart.getCountsLikes());
+                     sort.get(sort.size() -1 ).addCountComments(chart.getCountComments());
+                     sort.get(sort.size() -1 ).addCountViews(chart.getCountViews());
+                 }
              }
 
         }
@@ -61,19 +73,31 @@ public class DatesSort {
         for (ChartItem chart : list
                 ) {
             if(chart.getMediaType() == 1){
-                String m_date = chart.getDates().split("-")[0]+ "-"+
-                        chart.getDates().split("-")[1]+ " | ";
-                if(!arrayList.contains(m_date)){
+                if(list.size() <= 6){
+                    String m_date = chart.getDates().split("-")[0]+ "-"+
+                            chart.getDates().split("-")[1]+"-"+
+                            chart.getDates().split("-")[2] +" | ";
                     arrayList.add(m_date);
                     ChartItem chartItem = new ChartItem();
                     chartItem.setAllValue(chart.getMediaType(), m_date, chart.getCountsLikes(),
                             chart.getCountComments(), chart.getCountViews());
                     sort.add(chartItem);
-                }else {
 
-                    sort.get(sort.size() -1 ).addCountLikes(chart.getCountsLikes());
-                    sort.get(sort.size() -1 ).addCountComments(chart.getCountComments());
-                    sort.get(sort.size() -1 ).addCountViews(chart.getCountViews());
+                }else {
+                    String m_date = chart.getDates().split("-")[0]+ "-"+
+                            chart.getDates().split("-")[1]+ " | ";
+                    if(!arrayList.contains(m_date)){
+                        arrayList.add(m_date);
+                        ChartItem chartItem = new ChartItem();
+                        chartItem.setAllValue(chart.getMediaType(), m_date, chart.getCountsLikes(),
+                                chart.getCountComments(), chart.getCountViews());
+                        sort.add(chartItem);
+                    }else {
+
+                        sort.get(sort.size() -1 ).addCountLikes(chart.getCountsLikes());
+                        sort.get(sort.size() -1 ).addCountComments(chart.getCountComments());
+                        sort.get(sort.size() -1 ).addCountViews(chart.getCountViews());
+                    }
                 }
             }
 
@@ -90,19 +114,31 @@ public class DatesSort {
         for (ChartItem chart : list
                 ) {
             if(chart.getMediaType() == 2){
-                String m_date = chart.getDates().split("-")[0]+ "-"+
-                        chart.getDates().split("-")[1]+ " | ";
-                if(!arrayList.contains(m_date)){
+                if(list.size() <= 6){
+                    String m_date = chart.getDates().split("-")[0]+ "-"+
+                            chart.getDates().split("-")[1]+"-"+
+                            chart.getDates().split("-")[2] +" | ";
                     arrayList.add(m_date);
                     ChartItem chartItem = new ChartItem();
                     chartItem.setAllValue(chart.getMediaType(), m_date, chart.getCountsLikes(),
                             chart.getCountComments(), chart.getCountViews());
                     sort.add(chartItem);
-                }else {
 
-                    sort.get(sort.size() -1 ).addCountLikes(chart.getCountsLikes());
-                    sort.get(sort.size() -1 ).addCountComments(chart.getCountComments());
-                    sort.get(sort.size() -1 ).addCountViews(chart.getCountViews());
+                }else {
+                    String m_date = chart.getDates().split("-")[0]+ "-"+
+                            chart.getDates().split("-")[1]+ " | ";
+                    if(!arrayList.contains(m_date)){
+                        arrayList.add(m_date);
+                        ChartItem chartItem = new ChartItem();
+                        chartItem.setAllValue(chart.getMediaType(), m_date, chart.getCountsLikes(),
+                                chart.getCountComments(), chart.getCountViews());
+                        sort.add(chartItem);
+                    }else {
+
+                        sort.get(sort.size() -1 ).addCountLikes(chart.getCountsLikes());
+                        sort.get(sort.size() -1 ).addCountComments(chart.getCountComments());
+                        sort.get(sort.size() -1 ).addCountViews(chart.getCountViews());
+                    }
                 }
             }
 
@@ -119,19 +155,31 @@ public class DatesSort {
         for (ChartItem chart : list
                 ) {
             if(chart.getMediaType() == 8){
-                String m_date = chart.getDates().split("-")[0]+ "-"+
-                        chart.getDates().split("-")[1]+ " | ";
-                if(!arrayList.contains(m_date)){
+                if(list.size() <= 6){
+                    String m_date = chart.getDates().split("-")[0]+ "-"+
+                            chart.getDates().split("-")[1]+"-"+
+                            chart.getDates().split("-")[2] +" | ";
                     arrayList.add(m_date);
                     ChartItem chartItem = new ChartItem();
                     chartItem.setAllValue(chart.getMediaType(), m_date, chart.getCountsLikes(),
                             chart.getCountComments(), chart.getCountViews());
                     sort.add(chartItem);
-                }else {
 
-                    sort.get(sort.size() -1 ).addCountLikes(chart.getCountsLikes());
-                    sort.get(sort.size() -1 ).addCountComments(chart.getCountComments());
-                    sort.get(sort.size() -1 ).addCountViews(chart.getCountViews());
+                }else {
+                    String m_date = chart.getDates().split("-")[0]+ "-"+
+                            chart.getDates().split("-")[1]+ " | ";
+                    if(!arrayList.contains(m_date)){
+                        arrayList.add(m_date);
+                        ChartItem chartItem = new ChartItem();
+                        chartItem.setAllValue(chart.getMediaType(), m_date, chart.getCountsLikes(),
+                                chart.getCountComments(), chart.getCountViews());
+                        sort.add(chartItem);
+                    }else {
+
+                        sort.get(sort.size() -1 ).addCountLikes(chart.getCountsLikes());
+                        sort.get(sort.size() -1 ).addCountComments(chart.getCountComments());
+                        sort.get(sort.size() -1 ).addCountViews(chart.getCountViews());
+                    }
                 }
             }
 

@@ -11,6 +11,7 @@ public class IFilterView {
    interface View {
        void init();
        void initSpinnerDefault();
+       void initSpinnerPosts();
        void initClickListener();
        void initEtListener();
        void initTvCurrentDate();

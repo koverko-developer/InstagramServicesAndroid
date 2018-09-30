@@ -17,6 +17,7 @@ public class Prefs {
     private static final String APP_PREFERENCES_L_Cookie = "l_cookie";
     private static final String APP_PREFERENCES_L_Token = "l_token";
     private static final String APP_PREFERENCES_L_Api = "l_api";
+    private static final String APP_PREFERENCES_AUDIENCE_f = "audience_first";
     private SharedPreferences mSettings;
 
     public Prefs(Context context) {
@@ -93,6 +94,16 @@ public class Prefs {
         if(getLPopster() == 0) return false;
         else return true;
 
+    }
+
+    public boolean  getAudienceFirst(){
+        return mSettings.getBoolean(APP_PREFERENCES_AUDIENCE_f, true);
+    }
+
+    public void setAudienceFirst(boolean b){
+        SharedPreferences.Editor editor = mSettings.edit();
+        editor.putBoolean(APP_PREFERENCES_AUDIENCE_f, b);
+        editor.apply();
     }
 
 }
