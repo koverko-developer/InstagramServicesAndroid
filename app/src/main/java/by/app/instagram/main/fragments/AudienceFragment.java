@@ -123,10 +123,8 @@ public class AudienceFragment extends Fragment implements AudienceContract.View,
         img_filter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(progress.getVisibility() == View.GONE){
-                    if(filter.getVisibility() == View.VISIBLE) hideFilter();
-                    else showFilter();
-                }
+                if(filter.getVisibility() == View.VISIBLE) hideFilter();
+                else showFilter();
 
             }
         });

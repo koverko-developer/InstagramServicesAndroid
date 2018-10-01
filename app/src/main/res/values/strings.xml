@@ -45,5 +45,12 @@
     <string name="update_data">Обновить данные?</string>
     <string name="yes">ДА</string>
     <string name="audience_no_follow_or_unfollow">На данный момент от Вас никто не откисался/подписался, как только это произойдет - Вы сразу увидите!</string>
+    <string name="fragment_hashtags">Хэштеги</string>
+    <string name="hashtags_popular">Самые популярные</string>
+    <string name="hashtags_max_count_like">С наибольшим количеством лайков</string>
+    <string name="hashtags_max_count_comments">С наибольшим количеством комментариев</string>
+    <string name="empty_text_hashtags">Хэштеги не найдены....</string>
+    <string name="find_to_posts">Найдено в </string>
+    <string name="posts_1"> записях</string>
 
 </resources>

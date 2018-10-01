@@ -42,4 +42,8 @@ public interface IInstagramApi {
     @POST("/audience/{id}/")
     Observable<ResponseBody> getAudience(@Path("id") String user_id);
 
+    @POST("/hashtags/{id}/")
+    @FormUrlEncoded
+    Observable<ResponseBody> getHashtags(@Path("id") String user_id, @FieldMap Map<String, String> map);
+
 }

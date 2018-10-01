@@ -304,10 +304,8 @@ public class FragmentPosts extends Fragment implements PostsContract.ViewModel,
         img_filter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(progress.getVisibility() == View.GONE){
-                    if(filter.getVisibility() == View.VISIBLE) hideFilter();
-                    else showFilter();
-                }
+                if(filter.getVisibility() == View.VISIBLE) hideFilter();
+                else showFilter();
 
             }
         });

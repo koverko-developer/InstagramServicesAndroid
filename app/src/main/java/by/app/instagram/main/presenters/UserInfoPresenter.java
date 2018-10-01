@@ -123,6 +123,7 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
                                       = gson.fromJson(resp, VKUserInfo.class);
                               checkMediaRange(vkUserInfo.getmData().getmCounts().getMedia());
                               _view.setCardViewUI(vkUserInfo);
+                              prefs.setCountMedia(vkUserInfo.getmData().getmCounts().getMedia());
                               addToRealmUI(vkUserInfo);
                               getUserMediaInfo("");
                               getUserInfoTopLikers();

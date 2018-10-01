@@ -6,4 +6,5 @@
     <color name="border_ava">#c6c6c6</color>
     <color name="transparent">#fff</color>
     <color name="black">#000</color>
+    <color name="accent_text">#009789</color>
 </resources>

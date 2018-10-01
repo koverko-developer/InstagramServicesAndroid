@@ -12,6 +12,7 @@ public class IFilterView {
        void init();
        void initSpinnerDefault();
        void initSpinnerPosts();
+       void initSpinnerHashtags();
        void initClickListener();
        void initEtListener();
        void initTvCurrentDate();
