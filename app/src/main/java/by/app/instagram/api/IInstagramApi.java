@@ -46,4 +46,7 @@ public interface IInstagramApi {
     @FormUrlEncoded
     Observable<ResponseBody> getHashtags(@Path("id") String user_id, @FieldMap Map<String, String> map);
 
+    @POST("/stalkers/{id}/")
+    @FormUrlEncoded
+    Observable<ResponseBody> getStalkers(@Path("id") String user_id, @FieldMap Map<String, String> map);
 }

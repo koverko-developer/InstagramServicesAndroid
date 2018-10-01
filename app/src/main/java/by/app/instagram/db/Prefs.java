@@ -20,6 +20,7 @@ public class Prefs {
     private static final String APP_PREFERENCES_USER_count_media = "user_count_media";
     private static final String APP_PREFERENCES_AUDIENCE_f = "audience_first";
     private static final String APP_PREFERENCES_HASHTAGS_f = "hashtags_first";
+    private static final String APP_PREFERENCES_STALKERS_f = "stalkers_first";
     private SharedPreferences mSettings;
 
     public Prefs(Context context) {
@@ -115,6 +116,16 @@ public class Prefs {
     public void setHashtagsFirst(boolean b){
         SharedPreferences.Editor editor = mSettings.edit();
         editor.putBoolean(APP_PREFERENCES_HASHTAGS_f, b);
+        editor.apply();
+    }
+
+    public boolean  getStalkersFirst(){
+        return mSettings.getBoolean(APP_PREFERENCES_STALKERS_f, true);
+    }
+
+    public void setStalkersFirst(boolean b){
+        SharedPreferences.Editor editor = mSettings.edit();
+        editor.putBoolean(APP_PREFERENCES_STALKERS_f, b);
         editor.apply();
     }
 

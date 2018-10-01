@@ -52,5 +52,9 @@
     <string name="empty_text_hashtags">Хэштеги не найдены....</string>
     <string name="find_to_posts">Найдено в </string>
     <string name="posts_1"> записях</string>
+    <string name="fragment_stalkers">Сталкеры</string>
+    <string name="empty_stalkers">На вашем аккаунте не найдены пользователи, который лайкают и комментируют записи, не подписавшись на Вас...</string>
+    <string name="stalkers_find_comments_h1">Оставлено комментариев: </string>
+    <string name="stalkers_find_like_h1">Поставлено лайков: </string>
 
 </resources>
