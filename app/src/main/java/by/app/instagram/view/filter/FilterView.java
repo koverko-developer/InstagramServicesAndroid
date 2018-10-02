@@ -53,7 +53,7 @@ public class FilterView extends RelativeLayout implements IFilterView.View {
     TextView tv_period_1, tv_period_2;
     EditText et_counts_posts;
 
-    private int count_post = 0;
+    private int count_post = 100;
     Long period_1, period_2;
     Calendar dateAndTime;
     SimpleDateFormat df;
@@ -243,6 +243,8 @@ public class FilterView extends RelativeLayout implements IFilterView.View {
             e.printStackTrace();
         }
     }
+
+
 
     @Override
     public void initClickListener() {

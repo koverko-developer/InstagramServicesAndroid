@@ -29,6 +29,7 @@ import by.app.instagram.contracts.GeneralContract;
 import by.app.instagram.db.Prefs;
 import by.app.instagram.main.contracts.MainContract;
 import by.app.instagram.main.fragments.AudienceFragment;
+import by.app.instagram.main.fragments.FeedFragment;
 import by.app.instagram.main.fragments.FragmentLogin;
 import by.app.instagram.main.fragments.FragmentPosts;
 import by.app.instagram.main.fragments.StalkersFragment;
@@ -229,7 +230,8 @@ public class MainActivity extends AppCompatActivity
             //fragment = new FragmentPosts(MainActivity.this);
 //            fragment = new AudienceFragment(MainActivity.this);
             //fragment = new UserHashtagFragment(MainActivity.this);
-            fragment = new StalkersFragment(MainActivity.this);
+            //fragment = new StalkersFragment(MainActivity.this);
+            fragment = new FeedFragment(MainActivity.this);
             if(fragment != null) {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.container, fragment)

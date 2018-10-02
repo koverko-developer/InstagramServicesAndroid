@@ -56,5 +56,9 @@
     <string name="empty_stalkers">На вашем аккаунте не найдены пользователи, который лайкают и комментируют записи, не подписавшись на Вас...</string>
     <string name="stalkers_find_comments_h1">Оставлено комментариев: </string>
     <string name="stalkers_find_like_h1">Поставлено лайков: </string>
+    <string name="fragment_feed">Лента</string>
+    <string name="date">Дата</string>
+    <string name="er">ER</string>
+    <string name="feed_empty_list">Публикаций не найдено...</string>
 
 </resources>
