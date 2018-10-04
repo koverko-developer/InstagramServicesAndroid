@@ -18,6 +18,7 @@ public class Prefs {
     private static final String APP_PREFERENCES_L_Token = "l_token";
     private static final String APP_PREFERENCES_L_Api = "l_api";
     private static final String APP_PREFERENCES_USER_count_media = "user_count_media";
+    private static final String APP_PREFERENCES_USER_count_followers = "user_count_followers";
     private static final String APP_PREFERENCES_AUDIENCE_f = "audience_first";
     private static final String APP_PREFERENCES_HASHTAGS_f = "hashtags_first";
     private static final String APP_PREFERENCES_STALKERS_f = "stalkers_first";
@@ -147,6 +148,16 @@ public class Prefs {
     public void setCountMedia(long b){
         SharedPreferences.Editor editor = mSettings.edit();
         editor.putLong(APP_PREFERENCES_USER_count_media, b);
+        editor.apply();
+    }
+
+    public int getCountFollowers(){
+        return mSettings.getInt(APP_PREFERENCES_USER_count_followers, 1);
+    }
+
+    public void setCountFollowers(int b){
+        SharedPreferences.Editor editor = mSettings.edit();
+        editor.putInt(APP_PREFERENCES_USER_count_followers, b);
         editor.apply();
     }
 

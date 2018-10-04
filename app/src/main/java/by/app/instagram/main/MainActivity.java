@@ -18,15 +18,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.AnimationUtils;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.util.Map;
 
 import by.app.instagram.R;
 import by.app.instagram.contracts.GeneralContract;
 import by.app.instagram.db.Prefs;
+import by.app.instagram.enums.TypeMenu;
 import by.app.instagram.main.contracts.MainContract;
 import by.app.instagram.main.fragments.AudienceFragment;
 import by.app.instagram.main.fragments.FeedFragment;
@@ -38,7 +43,8 @@ import by.app.instagram.main.fragments.UserInfoFragment;
 import by.app.instagram.main.presenters.MainPresenter;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, MainContract.ViewModel{
+        implements NavigationView.OnNavigationItemSelectedListener,
+        MainContract.ViewModel, View.OnClickListener {
 
     private static final String TAG = "Main";
     Context v;
@@ -52,6 +58,16 @@ public class MainActivity extends AppCompatActivity
     MainPresenter _presenter;
 
     Prefs prefs;
+
+    RelativeLayout rel_profile, rel_feed, rel_posts, rel_audience, rel_hashtags,
+                   rel_stalkers, rel_exit;
+
+    ImageView img_profile,img_feed, img_posts, img_audience, img_hashtags,
+              img_stalkers, img_exit;
+
+    TextView tv_profile, tv_feed, tv_posts, tv_audience, tv_hashtags,
+             tv_stalkers, tv_exit;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +84,7 @@ public class MainActivity extends AppCompatActivity
         if(_presenter == null) _presenter = new MainPresenter(this, this);
 
         checkLogin();
+        //initMenu();
     }
 
     @Override
@@ -168,6 +185,66 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void initMenu() {
+
+        rel_profile = (RelativeLayout) findViewById(R.id.rel_profile);
+        rel_feed = (RelativeLayout) findViewById(R.id.rel_feed);
+        rel_posts = (RelativeLayout) findViewById(R.id.rel_posts);
+        rel_audience = (RelativeLayout) findViewById(R.id.rel_audience);
+        rel_stalkers = (RelativeLayout) findViewById(R.id.rel_stalkers);
+        rel_hashtags = (RelativeLayout) findViewById(R.id.rel_hashtags);
+
+        img_profile = (ImageView) findViewById(R.id.menu_img_profile);
+        img_feed = (ImageView) findViewById(R.id.menu_img_feed);
+        img_posts = (ImageView) findViewById(R.id.menu_img_posts);
+        img_audience = (ImageView) findViewById(R.id.menu_img_audience);
+        img_stalkers = (ImageView) findViewById(R.id.menu_img_stalkers);
+        img_hashtags = (ImageView) findViewById(R.id.menu_img_hashtags);
+
+        tv_profile = (TextView) findViewById(R.id.menu_tv_profile);
+        tv_feed = (TextView) findViewById(R.id.menu_tv_feed);
+        tv_posts = (TextView) findViewById(R.id.menu_tv_posts);
+        tv_audience = (TextView) findViewById(R.id.menu_tv_audience);
+        tv_stalkers = (TextView) findViewById(R.id.menu_tv_stalkers);
+        tv_hashtags = (TextView) findViewById(R.id.menu_tv_hashtags);
+
+        rel_profile.setOnClickListener(this);
+        rel_feed.setOnClickListener(this);
+        rel_posts.setOnClickListener(this);
+        rel_audience.setOnClickListener(this);
+        rel_stalkers.setOnClickListener(this);
+        rel_hashtags.setOnClickListener(this);
+    }
+
+    @Override
+    public void transactionFragment() {
+        if(fragment != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, fragment)
+                    .commit();
+        }
+
+        toolbar.setVisibility(View.GONE);
+        drawer.closeDrawer(GravityCompat.START);
+    }
+
+    @Override
+    public void clickMenu(TypeMenu _type, TextView _tv, ImageView _img) {
+
+        TextView[] tv_arr = new TextView[]{tv_profile, tv_feed, tv_posts, tv_audience,
+                tv_stalkers, tv_hashtags};
+        for (TextView tv : tv_arr){
+            tv.setTextColor(getResources().getColor(R.color.text_dark));
+
+        }
+        // TODO здесь изменение изображения еще нужно
+        _tv.setTextColor(getResources().getColor(R.color.colorPrimary));
+        _tv.startAnimation(AnimationUtils.loadAnimation(this, R.anim.click_view));
+        _img.startAnimation(AnimationUtils.loadAnimation(this, R.anim.click_view));
+
+    }
+
+    @Override
     public void checkLogin() {
 
         if(!prefs.isLoginInsta() || !prefs.isLoginPopster()) initLoginFragment();
@@ -217,21 +294,20 @@ public class MainActivity extends AppCompatActivity
     public void initView() {
 
         try {
+            initMenu();
             drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             toggle = new ActionBarDrawerToggle(
                     this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
             drawer.addDrawerListener(toggle);
             toggle.syncState();
 
-            navigationView = (NavigationView) findViewById(R.id.nav_view);
-            navigationView.setNavigationItemSelectedListener(this);
 
-            //fragment = new UserInfoFragment(MainActivity.this);
+            fragment = new UserInfoFragment(MainActivity.this);
             //fragment = new FragmentPosts(MainActivity.this);
 //            fragment = new AudienceFragment(MainActivity.this);
             //fragment = new UserHashtagFragment(MainActivity.this);
             //fragment = new StalkersFragment(MainActivity.this);
-            fragment = new FeedFragment(MainActivity.this);
+            //fragment = new FeedFragment(MainActivity.this);
             if(fragment != null) {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.container, fragment)
@@ -250,5 +326,44 @@ public class MainActivity extends AppCompatActivity
 
         _presenter.setLoginUser();
 
+    }
+
+    @Override
+    public void onClick(View view) {
+
+        int id = view.getId();
+
+        switch (id){
+            case R.id.rel_profile:
+                clickMenu(TypeMenu.Profile, tv_profile, img_profile);
+                fragment = new UserInfoFragment(MainActivity.this);
+                transactionFragment();
+                break;
+            case R.id.rel_feed:
+                clickMenu(TypeMenu.Feed, tv_feed, img_feed);
+                fragment = new FeedFragment(MainActivity.this);
+                transactionFragment();
+                break;
+            case R.id.rel_posts:
+                clickMenu(TypeMenu.Posts, tv_posts, img_posts);
+                fragment = new FragmentPosts(MainActivity.this);
+                transactionFragment();
+                break;
+            case R.id.rel_audience:
+                clickMenu(TypeMenu.Audience, tv_audience, img_audience);
+                fragment = new AudienceFragment(MainActivity.this);
+                transactionFragment();
+                break;
+            case R.id.rel_stalkers:
+                clickMenu(TypeMenu.Stalkers, tv_stalkers, img_stalkers);
+                fragment = new StalkersFragment(MainActivity.this);
+                transactionFragment();
+                break;
+            case R.id.rel_hashtags:
+                clickMenu(TypeMenu.HashtagsUser, tv_hashtags, img_hashtags);
+                fragment = new UserHashtagFragment(MainActivity.this);
+                transactionFragment();
+                break;
+        }
     }
 }

@@ -36,8 +36,8 @@ public class MainPresenter implements MainContract.Presenter{
         this.context = context;
         this.view = view;
         prefs = new Prefs(context);
-        h = new Handler();
-        h.post(internet);
+        //h = new Handler();
+        //h.post(internet);
     }
 
     Runnable internet = new Runnable() {
@@ -84,6 +84,9 @@ public class MainPresenter implements MainContract.Presenter{
                                 VKUserInfo vkUserInfo
                                         = gson.fromJson(resp, VKUserInfo.class);
                                 prefs.setLApi(vkUserInfo.getmData().getId());
+                                int c = vkUserInfo.getmData().getmCounts().getFollowedBy().intValue();
+                                prefs.setCountFollowers(c);
+                                prefs.setCountMedia(vkUserInfo.getmData().getmCounts().getMedia());
                             }
                             view.hideProgress();
                             view.checkLogin();

@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,9 +24,16 @@ import android.widget.Toast;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 
+import java.util.List;
+
 import by.app.instagram.R;
+import by.app.instagram.adapter.AudienceAdapter;
+import by.app.instagram.adapter.FeedAdapter;
+import by.app.instagram.enums.TypeFeed;
 import by.app.instagram.main.contracts.FeedContract;
 import by.app.instagram.main.presenters.FeedPresenter;
+import by.app.instagram.model.firebase.Image;
+import by.app.instagram.model.firebase.MediaObject;
 import by.app.instagram.view.filter.FilterView;
 import by.app.instagram.view.filter.TypeFilter;
 import by.app.instagram.view.filter.TypeSpinnerFilter;
@@ -98,31 +106,30 @@ public class FeedFragment extends Fragment implements FeedContract.View, View.On
     public void initFilter() {
         filter =  v.findViewById(R.id.filter);
         filter.setTypeFilter(TypeFilter.Feed);
+        filter.setCountPosts(100);
         filter.setTypeSpinnerFilter(TypeSpinnerFilter.CountPosts);
 
         filter.card_apply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                _presenter.setTypeSpinnerFilter(filter.getTypeSpinnerFilter());
-//
-//                if(filter.getTypeSpinnerFilter() == TypeSpinnerFilter.All){
-//                    _presenter.sortTypeMedia(typePosts);
-//
-//
-//                }else if(filter.getTypeSpinnerFilter() == TypeSpinnerFilter.CurrentMonth){
-//
-//                    _presenter.sortTypeMedia(typePosts);
-//
-//                }else if(filter.getTypeSpinnerFilter() == TypeSpinnerFilter.SelectMonth){
-//
-//                    _presenter.setPeriod1(filter.getPeriod1());
-//                    _presenter.setPeriod2(filter.getPeriod2());
-//                    _presenter.sortTypeMedia(typePosts);
-//
-//                }else if(filter.getTypeSpinnerFilter() == TypeSpinnerFilter.CountPosts){
-//                    _presenter.setCountsPosts(filter.getCountPosts());
-//                    _presenter.sortTypeMedia(typePosts);
-//                }
+                _presenter.setTypeSpinnerFilter(filter.getTypeSpinnerFilter());
+
+                if(filter.getTypeSpinnerFilter() == TypeSpinnerFilter.All){
+                    _presenter.sortData();
+
+                }else if(filter.getTypeSpinnerFilter() == TypeSpinnerFilter.CurrentMonth){
+                    _presenter.sortData();
+
+                }else if(filter.getTypeSpinnerFilter() == TypeSpinnerFilter.SelectMonth){
+
+                    _presenter.setPeriod1(filter.getPeriod1());
+                    _presenter.setPeriod2(filter.getPeriod2());
+                    _presenter.sortData();
+
+                }else if(filter.getTypeSpinnerFilter() == TypeSpinnerFilter.CountPosts){
+                    _presenter.setCountPosts(filter.getCountPosts());
+                    _presenter.sortData();
+                }
                 hideFilter();
 
             }
@@ -259,7 +266,9 @@ public class FeedFragment extends Fragment implements FeedContract.View, View.On
                             0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                 }else if(type == 3)rotate = new RotateAnimation(180, 00, Animation.RELATIVE_TO_SELF,
                         0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-            }else selected_img = (ImageView) view;
+            }else {
+                selected_img = (ImageView) view;
+            }
         }
         if(rotate != null){
             rotate.setDuration(300);
@@ -289,36 +298,74 @@ public class FeedFragment extends Fragment implements FeedContract.View, View.On
     }
 
     @Override
+    public void setRecycler(List<MediaObject> list) {
+        FeedAdapter audienceAdapter = new FeedAdapter(list, v.getContext());
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(v.getContext());
+        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        rec_posts.setLayoutManager(mLayoutManager);
+        rec_posts.setAdapter(audienceAdapter);
+    }
+
+    @Override
+    public int getDateCardPosition() {
+        return this.img_card_date_position;
+    }
+
+    @Override
+    public int getLieksCardPosition() {
+        return this.img_card_likes_position;
+    }
+
+    @Override
+    public int getCommentsCardPosition() {
+        return this.img_card_comments_position;
+    }
+
+    @Override
+    public int getERCardPosition() {
+        return this.img_card_er_position;
+    }
+
+    @Override
     public void onClick(View view) {
 
         int id = view.getId();
         animClickCard(view);
         switch (id){
             case R.id.card_h1:
+                _presenter.setTypeFeed(TypeFeed.Date);
                 setSelectedCard(card_date);
-                if(img_card_date_position == 0) {
-                    animRotate(img_card_date, 2);
-                    if(selected_img == img_card_date) img_card_date_position = 180;
-                }
-                else {
-                    animRotate(img_card_date, 3);
-                    if(selected_img == img_card_date) img_card_date_position = 0;
-                }
+                if(selected_img == img_card_date){
+                    if(img_card_date_position == 0) {
+                        animRotate(img_card_date, 2);
+                        if(selected_img == img_card_date) img_card_date_position = 180;
+                    }
+                    else {
+                        animRotate(img_card_date, 3);
+                        if(selected_img == img_card_date) img_card_date_position = 0;
+                    }
+                }selected_img = img_card_date;
+                _presenter.sortData();
                 break;
             case R.id.card_h2:
+                _presenter.setTypeFeed(TypeFeed.Likes);
                 setSelectedCard(card_likes);
-                if(img_card_likes_position == 0) {
-                    animRotate(img_card_likes, 2);
-                    if(selected_img == img_card_likes)img_card_likes_position = 180;
-                }
-                else {
-                    if(selected_img == img_card_likes) animRotate(img_card_likes, 3);
-                    img_card_likes_position = 0;
-                }
+                if(selected_img == img_card_likes){
+                    if(img_card_likes_position == 0) {
+                        animRotate(img_card_likes, 2);
+                        if(selected_img == img_card_likes)img_card_likes_position = 180;
+                    }
+                    else {
+                        if(selected_img == img_card_likes) animRotate(img_card_likes, 3);
+                        img_card_likes_position = 0;
+                    }
+                }else selected_img = img_card_likes;
+                _presenter.sortData();
                 break;
             case R.id.card_h3:
+                _presenter.setTypeFeed(TypeFeed.Comments);
                 setSelectedCard(card_comments);
-                if(img_card_comments_position == 0) {
+                if(selected_img == img_card_comments){if(img_card_comments_position == 0) {
                     animRotate(img_card_comments, 2);
                     if(selected_img == img_card_comments) img_card_comments_position = 180;
                 }
@@ -326,17 +373,24 @@ public class FeedFragment extends Fragment implements FeedContract.View, View.On
                     animRotate(img_card_comments, 3);
                     if(selected_img == img_card_comments) img_card_comments_position = 0;
                 }
+
+                }else selected_img = img_card_comments;
+                _presenter.sortData();
                 break;
             case R.id.card_h4:
+                _presenter.setTypeFeed(TypeFeed.ER);
                 setSelectedCard(card_er);
-                if(img_card_er_position == 0) {
-                    animRotate(img_card_er, 2);
-                    if(selected_img == img_card_er) img_card_er_position = 180;
-                }
-                else {
-                    animRotate(img_card_er, 3);
-                    if(selected_img == img_card_er) img_card_er_position = 0;
-                }
+                if(selected_img == img_card_er){
+                    if(img_card_er_position == 0) {
+                        animRotate(img_card_er, 2);
+                        if(selected_img == img_card_er) img_card_er_position = 180;
+                    }
+                    else {
+                        animRotate(img_card_er, 3);
+                        if(selected_img == img_card_er) img_card_er_position = 0;
+                    }
+                }else selected_img = img_card_er;
+                _presenter.sortData();
                 break;
         }
 
@@ -346,7 +400,15 @@ public class FeedFragment extends Fragment implements FeedContract.View, View.On
     public void onPause() {
         try {
             _presenter.destroyListeners();
-        }catch (Exception e){}
+        }catch (Exception e){
+
+        }
         super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        _presenter.checkInernet();
+        super.onResume();
     }
 }

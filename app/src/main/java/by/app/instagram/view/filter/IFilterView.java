@@ -31,6 +31,7 @@ public class IFilterView {
        int getCountPosts();
        long getPeriod1();
        long getPeriod2();
+       void setCountPosts(int _count);
    }
 
 }

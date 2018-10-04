@@ -404,6 +404,11 @@ public class FilterView extends RelativeLayout implements IFilterView.View {
         return period_2;
     }
 
+    @Override
+    public void setCountPosts(int _count) {
+        this.count_post = _count;
+    }
+
 
     DatePickerDialog.OnDateSetListener myCallBackPeriod1 = new DatePickerDialog.OnDateSetListener() {
         @Override

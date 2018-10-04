@@ -3,6 +3,11 @@ package by.app.instagram.main.presenters;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.HashMap;
@@ -13,6 +18,9 @@ import by.app.instagram.api.ApiServices;
 import by.app.instagram.db.Prefs;
 import by.app.instagram.main.contracts.UserInfoContract;
 import by.app.instagram.model.Meta;
+import by.app.instagram.model.ResponseApi;
+import by.app.instagram.model.firebase.MediaObject;
+import by.app.instagram.model.firebase.Progress;
 import by.app.instagram.model.fui.UserInfo;
 import by.app.instagram.model.fui.UserInfoMedia;
 import by.app.instagram.model.fui.UserInfoTop;
@@ -34,11 +42,24 @@ import rx.schedulers.Schedulers;
 
 public class UserInfoPresenter implements UserInfoContract.Presenter{
 
+    private static String TAG = UserInfoPresenter.class.getName();
+
     private Context context;
     private UserInfoContract.ViewModel _view;
     Prefs prefs;
     int count_feed_media = 0;
     Realm realm;
+
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference progress;
+    DatabaseReference info;
+    DatabaseReference topLikers;
+    DatabaseReference topComments;
+
+    ValueEventListener listenerProgress;
+    ValueEventListener listenerinfo;
+    ValueEventListener listenerTopLikers;
+    ValueEventListener listenerTopComments;
 
     private UserInfoMedia userInfoMedia = new UserInfoMedia();
 
@@ -61,21 +82,21 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
     public void checkInternet() {
         final RealmResults<TopLikersR> topLikes =
               realm.where(TopLikersR.class).findAll();
-        if(topLikes != null && topLikes.size() !=0 ) _view.addCardViewMedia3Info(topLikes.get(0).getTopLikers());
+        if(topLikes != null && topLikes.size() !=0 ) _view.addCardViewMedia3Info(topLikes.get(topLikes.size() -1).getTopLikers());
 
         final RealmResults<TopCommentsR> topComments =
                 realm.where(TopCommentsR.class).findAll();
-        if(topComments != null && topComments.size() !=0 ) _view.addCardViewMedia4Info(topComments.get(0).getTopLikers());
+        if(topComments != null && topComments.size() !=0 ) _view.addCardViewMedia4Info(topComments.get(topComments.size()-1).getTopLikers());
 
         final RealmResults<UserInfoRealm> userInfo =
                 realm.where(UserInfoRealm.class).findAll();
         if(userInfo != null && userInfo.size() != 0) {
             VKUserInfo info = new VKUserInfo();
             Data d = new Data();
-            d.setProfilePicture(userInfo.get(0).getProfile());
+            d.setProfilePicture(userInfo.get(userInfo.size()-1).getProfile());
             Counts counts = new Counts();
-            counts.setFollowedBy(userInfo.get(0).getFollowed_by());
-            counts.setFollows(userInfo.get(0).getFollows());
+            counts.setFollowedBy(userInfo.get(userInfo.size()-1).getFollowed_by());
+            counts.setFollows(userInfo.get(userInfo.size()-1).getFollows());
             d.setmCounts(counts);
             info.setmData(d);
             _view.setCardViewUI(info);
@@ -85,16 +106,20 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
                 realm.where(UserMediaR.class).findAll();
         if(infoMedia != null && infoMedia.size() !=0 ) {
             UserInfoMedia media = new UserInfoMedia();
-            media.setCount_comments(infoMedia.get(0).getCount_comments());
-            media.setCount_corousel(infoMedia.get(0).getCount_corousel());
-            media.setCount_like(infoMedia.get(0).getCount_like());
-            media.setCount_view(infoMedia.get(0).getCount_view());
-            media.setCount_video(infoMedia.get(0).getCount_video());
-            media.setCount_photo(infoMedia.get(0).getCount_photo());
+            media.setCount_comments(infoMedia.get(infoMedia.size()-1).getCount_comments());
+            media.setCount_corousel(infoMedia.get(infoMedia.size()-1).getCount_corousel());
+            media.setCount_like(infoMedia.get(infoMedia.size()-1).getCount_like());
+            media.setCount_view(infoMedia.get(infoMedia.size()-1).getCount_view());
+            media.setCount_video(infoMedia.get(infoMedia.size()-1).getCount_video());
+            media.setCount_photo(infoMedia.get(infoMedia.size()-1).getCount_photo());
             _view.addCardViewMediaInfo(media);
             _view.addCardViewMedia2Info(media);
         }
         getUI();
+        addListenerProgress();
+        addListenerInfo();
+        addListenerTopLikers();
+        addListenerTopComments();
 
     }
 
@@ -104,7 +129,7 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
 
     @Override
     public void getUI() {
-        _view.showProgress();
+        //_view.showProgress();
         Map<String, String> map = new HashMap<>();
         map.put("access_token", prefs.getLToken());
         Observable<ResponseBody> observable = new ApiServices().getApi().getUserInfo(map);
@@ -124,10 +149,10 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
                               checkMediaRange(vkUserInfo.getmData().getmCounts().getMedia());
                               _view.setCardViewUI(vkUserInfo);
                               prefs.setCountMedia(vkUserInfo.getmData().getmCounts().getMedia());
+                              prefs.setCountFollowers(vkUserInfo.getmData().getmCounts().getFollowedBy().intValue());
                               addToRealmUI(vkUserInfo);
                               getUserMediaInfo("");
-                              getUserInfoTopLikers();
-                              getUserInfoTopComments();
+
                           }
 
                           String ds = resp;
@@ -139,28 +164,58 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
     }
 
     @Override
-    public void getUserMediaInfo(String next_url) {
-
+    public void getUserMediaInfo(String next_url){
+//        Gson gson = new Gson();
+//        UserInfoMedia media = data;
+//        userInfoMedia.addUserMedia(media);
+//        Log.e("dsadasdsada", "dsaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+String.valueOf(userInfoMedia.count_photo));
+//        _view.addCardViewMediaInfo(userInfoMedia);
+//        _view.addCardViewMedia2Info(userInfoMedia);
+//        addToRealmUI2(media);
         Map<String, String> map = new HashMap<>();
-        map.put("count_media", String.valueOf(count_feed_media));
+        map.put("count_media", String.valueOf(checkMediaRange(prefs.getCountMedia())));
 
-        Observable<UserInfoMedia> observable = new ApiServices().getApi().getUserInfoMedia(String.valueOf(prefs.getLApi()), map);
+        rx.Observable<ResponseBody> observable =
+                new ApiServices().getApi().getUserInfoMedia(String.valueOf(prefs.getLApi()), map);
         observable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(data ->{
-                    if(data != null) {
+                .subscribe(new Subscriber<ResponseBody>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        _view.hideProgress();
+                    }
+
+                    @Override
+                    public void onNext(ResponseBody responseBody) {
+
                         try{
-                            Gson gson = new Gson();
-                            UserInfoMedia media = data;
-                            userInfoMedia.addUserMedia(media);
-                            Log.e("dsadasdsada", "dsaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+String.valueOf(userInfoMedia.count_photo));
-                            _view.addCardViewMediaInfo(userInfoMedia);
-                            _view.addCardViewMedia2Info(userInfoMedia);
-                            addToRealmUI2(media);
+
+                            if(responseBody != null){
+                                String resp = responseBody.string();
+                                Gson gson = new Gson();
+
+                                if(resp.contains("error_type")){
+                                    Meta meta = gson.fromJson(resp, Meta.class);
+                                    String err = meta.getMeta().getErrorMessage();
+                                    _view.hideProgress();
+                                }else{
+                                    ResponseApi responseApi =
+                                            gson.fromJson(resp, ResponseApi.class);
+                                    //getUserInfoTopLikers();
+                                }
+
+                            }
+
                         }
                         catch (Exception e){
-                            String d = e.toString();
+
                         }
+
                     }
                 });
 
@@ -172,7 +227,8 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
     }
 
     @Override
-    public void checkMediaRange(Long count_media) {
+    public int checkMediaRange(Long count_media) {
+        int count_feed_media = 0;
         if(count_media <=18) count_feed_media = 1;
         else {
             //count_media = Long.valueOf(36);
@@ -185,26 +241,62 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
                 }
             }
         }
-        //count_feed_media = 10;
-
+        Log.e(TAG, "count media = "+count_feed_media);
+        return count_feed_media;
     }
 
     @Override
     public void getUserInfoTopLikers() {
-
+//        if(data != null){
+//            _view.addCardViewMedia3Info(data);
+//            arrToRealmTopLikers(data);
+//        }
         Map<String, String> map = new HashMap<>();
         map.put("count_media", String.valueOf(count_feed_media));
 
-        Observable<List<UserInfoTop>> observable = new ApiServices().getApi().getUserTopLikers(String.valueOf(prefs.getLApi()), map);
+        Observable<ResponseBody> observable = new ApiServices().getApi().getUserTopLikers(String.valueOf(prefs.getLApi()), map);
         observable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(data ->{
+                .subscribe(new Subscriber<ResponseBody>() {
+                    @Override
+                    public void onCompleted() {
 
-                    if(data != null){
-                        _view.addCardViewMedia3Info(data);
-                        arrToRealmTopLikers(data);
                     }
 
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, e.toString());
+                        _view.hideProgress();
+                    }
+
+                    @Override
+                    public void onNext(ResponseBody responseBody) {
+                        try{
+
+                            if(responseBody != null){
+                                String resp = responseBody.string();
+                                Gson gson = new Gson();
+
+                                if(resp.contains("error_type")){
+                                    Meta meta = gson.fromJson(resp, Meta.class);
+                                    String err = meta.getMeta().getErrorMessage();
+                                    _view.hideProgress();
+                                }else{
+                                    ResponseApi responseApi =
+                                            gson.fromJson(resp, ResponseApi.class);
+
+                                    getUserInfoTopComments();
+
+                                }
+
+                            }
+
+                        }
+                        catch (Exception e){
+
+                        }
+
+                    }
                 });
     }
 
@@ -213,17 +305,54 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
 
         Map<String, String> map = new HashMap<>();
         map.put("count_media", String.valueOf(count_feed_media));
-
-        Observable<List<UserInfoTop>> observable = new ApiServices().getApi().getUserTopComments(String.valueOf(prefs.getLApi()), map);
+//        if(data != null){
+//            _view.hideProgress();
+//            _view.addCardViewMedia4Info(data);
+//            arrToRealmTopComments(data);
+//        }
+        Observable<ResponseBody> observable = new ApiServices().getApi().getUserTopComments(String.valueOf(prefs.getLApi()), map);
         observable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(data ->{
-                    if(data != null){
-                        _view.hideProgress();
-                        _view.addCardViewMedia4Info(data);
-                        arrToRealmTopComments(data);
+                .subscribe(new Subscriber<ResponseBody>() {
+                    @Override
+                    public void onCompleted() {
+
                     }
 
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, e.toString());
+                        _view.hideProgress();
+                    }
+
+                    @Override
+                    public void onNext(ResponseBody responseBody) {
+
+                        try{
+
+                            if(responseBody != null){
+                                String resp = responseBody.string();
+                                Gson gson = new Gson();
+
+                                if(resp.contains("error_type")){
+                                    Meta meta = gson.fromJson(resp, Meta.class);
+                                    String err = meta.getMeta().getErrorMessage();
+                                    _view.hideProgress();
+                                }else{
+                                    ResponseApi responseApi =
+                                            gson.fromJson(resp, ResponseApi.class);
+
+                                }
+
+                            }
+
+                        }
+                        catch (Exception e){
+
+                        }
+
+
+                    }
                 });
 
     }
@@ -286,5 +415,102 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
 
         realm.commitTransaction();
 
+    }
+
+    @Override
+    public void addListenerProgress() {
+        listenerProgress = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                Progress progress = dataSnapshot.getValue(Progress.class);
+
+
+                if(progress != null){
+                    if(progress.isValue()) _view.showProgress();
+                    else _view.hideProgress();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        progress = database.getReference("users/"+prefs.getLApi() + "/info/media/progress");
+        progress.addValueEventListener(listenerProgress);
+    }
+
+    @Override
+    public void addListenerInfo() {
+
+        listenerinfo = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                UserInfoMedia media = dataSnapshot.getValue(UserInfoMedia.class);
+
+                if(media != null){
+                    userInfoMedia = media;
+                    _view.addCardViewMediaInfo(userInfoMedia);
+                    _view.addCardViewMedia2Info(userInfoMedia);
+                    addToRealmUI2(media);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        info = database.getReference("users/"+prefs.getLApi() + "/info/media/all/value/");
+        info.addValueEventListener(listenerinfo);
+
+    }
+
+    @Override
+    public void addListenerTopLikers() {
+        listenerTopLikers = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        topLikers = database.getReference("users/"+prefs.getLApi() + "/top/likes/value/");
+        topLikers.addValueEventListener(listenerTopLikers);
+    }
+
+    @Override
+    public void addListenerTopComments() {
+        listenerTopComments = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        topComments = database.getReference("users/"+prefs.getLApi() + "/top/comments/value/");
+        topComments.addValueEventListener(listenerTopComments);
+    }
+
+    @Override
+    public void destroyListener() {
+        progress.removeEventListener(listenerProgress);
+        info.removeEventListener(listenerinfo);
     }
 }

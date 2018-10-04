@@ -44,7 +44,7 @@
     <string name="audience_fragment">Аудитория</string>
     <string name="update_data">Обновить данные?</string>
     <string name="yes">ДА</string>
-    <string name="audience_no_follow_or_unfollow">На данный момент от Вас никто не откисался/подписался, как только это произойдет - Вы сразу увидите!</string>
+    <string name="audience_no_follow_or_unfollow">На данный момент от Вас никто не отписался/подписался, как только это произойдет - Вы сразу увидите!</string>
     <string name="fragment_hashtags">Хэштеги</string>
     <string name="hashtags_popular">Самые популярные</string>
     <string name="hashtags_max_count_like">С наибольшим количеством лайков</string>
@@ -60,5 +60,6 @@
     <string name="date">Дата</string>
     <string name="er">ER</string>
     <string name="feed_empty_list">Публикаций не найдено...</string>
+    <string name="fragment_profile">Профиль</string>
 
 </resources>

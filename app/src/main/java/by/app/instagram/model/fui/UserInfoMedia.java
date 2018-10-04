@@ -20,7 +20,7 @@ public class UserInfoMedia {
     public int count_video;
 
     @SerializedName("count_carousel")
-    public int count_corousel;
+    public int count_carousel;
 
     @SerializedName("next_url")
     public String next_url;
@@ -67,11 +67,11 @@ public class UserInfoMedia {
     }
 
     public int getCount_corousel() {
-        return count_corousel;
+        return count_carousel;
     }
 
     public void setCount_corousel(int count_corousel) {
-        this.count_corousel = count_corousel;
+        this.count_carousel = count_corousel;
     }
 
     public String getNext_url() {
@@ -86,7 +86,7 @@ public class UserInfoMedia {
 
         this.count_like = this.count_like + media.getCount_like();
         this.count_comments = this.count_comments + media.getCount_comments();
-        this.count_corousel = this.count_corousel + media.getCount_corousel();
+        this.count_carousel = this.count_carousel + media.getCount_corousel();
         this.count_photo = this.count_photo + media.getCount_photo();
         this.count_video = this.count_video + media.getCount_video();
         this.count_view = this.count_view + media.getCount_view();

@@ -25,15 +25,15 @@ public interface IInstagramApi {
 
     @POST("/users/{id}/media/info")
     @FormUrlEncoded
-    Observable<UserInfoMedia> getUserInfoMedia(@Path("id") String user_id, @FieldMap Map<String, String> map);
+    Observable<ResponseBody> getUserInfoMedia(@Path("id") String user_id, @FieldMap Map<String, String> map);
 
     @POST("/top/{id}/likes")
     @FormUrlEncoded
-    Observable<List<UserInfoTop>> getUserTopLikers(@Path("id") String user_id, @FieldMap Map<String, String> map);
+    Observable<ResponseBody> getUserTopLikers(@Path("id") String user_id, @FieldMap Map<String, String> map);
 
     @POST("/top/{id}/comments")
     @FormUrlEncoded
-    Observable<List<UserInfoTop>> getUserTopComments(@Path("id") String user_id, @FieldMap Map<String, String> map);
+    Observable<ResponseBody> getUserTopComments(@Path("id") String user_id, @FieldMap Map<String, String> map);
 
     @POST("/posts/{id}/")
     @FormUrlEncoded

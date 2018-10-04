@@ -35,13 +35,18 @@ public class UserInfoContract {
         void getUI();
         void getUserMediaInfo(String next_url);
         void resetInfo();
-        void checkMediaRange(Long count_media);
+        int checkMediaRange(Long count_media);
         void getUserInfoTopLikers();
         void getUserInfoTopComments();
         void arrToRealmTopLikers(List<UserInfoTop> topList);
         void arrToRealmTopComments(List<UserInfoTop> topList);
         void addToRealmUI(VKUserInfo viewUI);
         void addToRealmUI2(UserInfoMedia media);
+        void addListenerProgress();
+        void addListenerInfo();
+        void addListenerTopLikers();
+        void addListenerTopComments();
+        void destroyListener();
     }
 
 }

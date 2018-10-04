@@ -7,4 +7,5 @@
     <color name="transparent">#fff</color>
     <color name="black">#000</color>
     <color name="accent_text">#009789</color>
+    <color name="text_dark">#af000000</color>
 </resources>

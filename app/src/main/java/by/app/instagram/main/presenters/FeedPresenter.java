@@ -13,12 +13,15 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import by.app.instagram.api.ApiServices;
+import by.app.instagram.db.FeedSort;
 import by.app.instagram.db.Prefs;
+import by.app.instagram.enums.TypeFeed;
 import by.app.instagram.main.contracts.FeedContract;
 import by.app.instagram.model.Meta;
 import by.app.instagram.model.ResponseApi;
@@ -28,6 +31,8 @@ import by.app.instagram.model.firebase.Progress;
 import by.app.instagram.model.realm.AudienseInfoR;
 import by.app.instagram.model.realm.FeedMediaR;
 import by.app.instagram.model.realm.UsersHashtagsR;
+import by.app.instagram.view.filter.TypeFilter;
+import by.app.instagram.view.filter.TypeSpinnerFilter;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import okhttp3.ResponseBody;
@@ -53,6 +58,14 @@ public class FeedPresenter implements FeedContract.Prsenter{
     List<MediaObject> feedList = new ArrayList<>();
 
     Realm realm;
+    TypeFeed typeFeed = TypeFeed.Date;
+    int position = 0;
+
+    TypeSpinnerFilter typeSpinnerFilter = TypeSpinnerFilter.CountPosts;
+    int count_posts = 100;
+
+    long period1 = 0;
+    long period2 = 0;
 
     public FeedPresenter(FeedContract.View _view, Context context) {
         this._view = _view;
@@ -124,6 +137,7 @@ public class FeedPresenter implements FeedContract.Prsenter{
                 }
 
                 int i  = feedList.size();
+                sortData();
             }
 
             @Override
@@ -246,8 +260,90 @@ public class FeedPresenter implements FeedContract.Prsenter{
         if(infoRS != null){
             if(infoRS.size() != 0){
                 feedList = infoRS.get(infoRS.size() -1).getList();
+                sortData();
             }
+
         }
 
+
+    }
+
+    @Override
+    public void sortData() {
+        List<MediaObject> sortList = new ArrayList<>();
+        sortList = feedList;
+        Log.e(TAG, "period_1 = "+period1);
+        Log.e(TAG, "period_2 = "+period2);
+        Log.e(TAG, "count posts = "+count_posts);
+
+        // TODO здесь добавить соритровку по ЕR
+
+        if(typeFeed == TypeFeed.Date) {
+            Log.e(TAG, "type feed = date");
+            position = _view.getDateCardPosition();
+            if(position == 0) Collections.sort(sortList, MediaObject.MediaDateComparatorReverse);
+            else Collections.sort(sortList, MediaObject.MediaDateComparator);
+        }
+        else if(typeFeed == TypeFeed.Likes){
+            Log.e(TAG, "type feed = likes");
+            position = _view.getLieksCardPosition();
+            if(position == 0) Collections.sort(sortList, MediaObject.MediaLikeComparatorReverse);
+            else Collections.sort(sortList, MediaObject.MediaLikeComparator);
+        }else if(typeFeed == TypeFeed.Comments){
+            Log.e(TAG, "type feed = comments");
+            position = _view.getCommentsCardPosition();
+            if(position == 0) Collections.sort(sortList, MediaObject.MediaCommentsComparatorReverse);
+            else Collections.sort(sortList, MediaObject.MediaCommentsComparator);
+        }
+
+        if(typeSpinnerFilter == TypeSpinnerFilter.CountPosts){
+            Log.e(TAG, "type spinner feed = posts");
+            if(count_posts <  prefs.getCountMedia()) count_posts = (int) prefs.getCountMedia();
+            sortList = FeedSort.sortCountPosts(count_posts, sortList);
+        }else if(typeSpinnerFilter == TypeSpinnerFilter.All){
+            Log.e(TAG, "type feed = All");
+        }else if(typeSpinnerFilter == TypeSpinnerFilter.SelectMonth) {
+            Log.e(TAG, "type feed = select month");
+            sortList = FeedSort.sortSelectMonth(sortList, period1, period2);
+        }
+        else if(typeSpinnerFilter == TypeSpinnerFilter.CurrentMonth){
+            Log.e(TAG, "type feed = current month");
+            sortList = FeedSort.sortCurrentMonth(sortList);
+        }
+
+        if(sortList != null) _view.setRecycler(sortList);
+
+    }
+
+    @Override
+    public void setTypeFeed(TypeFeed _typeFeed) {
+
+        this.typeFeed = _typeFeed;
+
+    }
+
+    @Override
+    public void setPeriod1(long _period1) {
+        this.period1 = _period1;
+    }
+
+    @Override
+    public void setPeriod2(long _period2) {
+        this.period2 = _period2;
+    }
+
+    @Override
+    public void setCountPosts(int _countPosts) {
+        this.count_posts = _countPosts;
+    }
+
+    @Override
+    public void setTypeSpinnerFilter(TypeSpinnerFilter _typeSpinnerFilter) {
+        this.typeSpinnerFilter = _typeSpinnerFilter;
+    }
+
+    @Override
+    public void checkData() {
+        if(feedList == null || feedList.size() == 0) checkInernet();
     }
 }

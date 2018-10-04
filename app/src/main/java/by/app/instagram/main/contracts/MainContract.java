@@ -1,5 +1,11 @@
 package by.app.instagram.main.contracts;
 
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import by.app.instagram.enums.TypeMenu;
+
 public interface MainContract {
 
     interface ViewModel {
@@ -13,6 +19,9 @@ public interface MainContract {
         void connectSucsefull();
         void showProgress();
         void hideProgress();
+        void initMenu();
+        void transactionFragment();
+        void clickMenu(TypeMenu _type, TextView _tv, ImageView _img);
     }
 
     interface Presenter {

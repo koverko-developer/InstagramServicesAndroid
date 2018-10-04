@@ -1,6 +1,7 @@
 package by.app.instagram.model.firebase;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -13,6 +14,7 @@ public class MediaObject extends RealmObject{
     int mediaType;
     long takenAt;
     String text;
+    double er;
 
     Image images;
 
@@ -72,5 +74,79 @@ public class MediaObject extends RealmObject{
 
     public void setImages(Image images) {
         this.images = images;
+    }
+
+    public static Comparator<MediaObject> MediaDateComparator = new Comparator<MediaObject>() {
+        @Override
+        public int compare(MediaObject mediaObject, MediaObject t1) {
+
+            Long l1 = mediaObject.takenAt;
+            Long l2 = t1.takenAt;
+
+            return l1.compareTo(l2);
+        }
+    };
+
+    public static Comparator<MediaObject> MediaDateComparatorReverse = new Comparator<MediaObject>() {
+        @Override
+        public int compare(MediaObject mediaObject, MediaObject t1) {
+
+            Long l1 = mediaObject.takenAt;
+            Long l2 = t1.takenAt;
+
+            return l2.compareTo(l1);
+        }
+    };
+
+    public static Comparator<MediaObject> MediaLikeComparatorReverse = new Comparator<MediaObject>() {
+        @Override
+        public int compare(MediaObject mediaObject, MediaObject t1) {
+
+            int l1 = mediaObject.countsLikes;
+            int l2 = t1.countsLikes;
+
+            return Integer.compare(l2, l1);
+        }
+    };
+
+    public static Comparator<MediaObject> MediaLikeComparator = new Comparator<MediaObject>() {
+        @Override
+        public int compare(MediaObject mediaObject, MediaObject t1) {
+
+            int l1 = mediaObject.countsLikes;
+            int l2 = t1.countsLikes;
+
+            return Integer.compare(l1, l2);
+        }
+    };
+
+    public static Comparator<MediaObject> MediaCommentsComparatorReverse = new Comparator<MediaObject>() {
+        @Override
+        public int compare(MediaObject mediaObject, MediaObject t1) {
+
+            int l1 = mediaObject.countComments;
+            int l2 = t1.countComments;
+
+            return Integer.compare(l2, l1);
+        }
+    };
+
+    public static Comparator<MediaObject> MediaCommentsComparator = new Comparator<MediaObject>() {
+        @Override
+        public int compare(MediaObject mediaObject, MediaObject t1) {
+
+            int l1 = mediaObject.countComments;
+            int l2 = t1.countComments;
+
+            return Integer.compare(l1, l2);
+        }
+    };
+
+    public double getEr() {
+        return er;
+    }
+
+    public void setEr(double er) {
+        this.er = er;
     }
 }
