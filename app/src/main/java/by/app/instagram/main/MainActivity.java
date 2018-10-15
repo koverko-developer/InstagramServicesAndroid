@@ -245,6 +245,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void showMenu() {
+        drawer.openDrawer(GravityCompat.START);
+    }
+
+    @Override
     public void checkLogin() {
 
         if(!prefs.isLoginInsta() || !prefs.isLoginPopster()) initLoginFragment();
@@ -302,8 +307,8 @@ public class MainActivity extends AppCompatActivity
             toggle.syncState();
 
 
-            fragment = new UserInfoFragment(MainActivity.this);
-            //fragment = new FragmentPosts(MainActivity.this);
+            //fragment = new UserInfoFragment(MainActivity.this);
+            fragment = new FragmentPosts(MainActivity.this);
 //            fragment = new AudienceFragment(MainActivity.this);
             //fragment = new UserHashtagFragment(MainActivity.this);
             //fragment = new StalkersFragment(MainActivity.this);

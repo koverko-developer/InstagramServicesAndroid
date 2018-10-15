@@ -93,7 +93,7 @@ public class FragmentLogin extends Fragment implements LoginContract.ViewModel,G
 
                 } else {
                     CookieSyncManager.getInstance().sync();
-                    webView.setVisibility(View.GONE);
+                    //webView.setVisibility(View.GONE);
                     String cookies = CookieManager.getInstance().getCookie(url);
                     Log.d(TAG, "All the cookies in a string:" + cookies);
                     prefs.setLInsta("1");

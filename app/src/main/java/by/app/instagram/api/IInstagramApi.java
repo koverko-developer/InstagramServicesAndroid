@@ -37,7 +37,7 @@ public interface IInstagramApi {
 
     @POST("/posts/{id}/")
     @FormUrlEncoded
-    Observable<PostsInfo> getPostsInfo(@Path("id") String user_id, @FieldMap Map<String, String> map);
+    Observable<ResponseBody> getPostsInfo(@Path("id") String user_id, @FieldMap Map<String, String> map);
 
     @POST("/audience/{id}/")
     Observable<ResponseBody> getAudience(@Path("id") String user_id);

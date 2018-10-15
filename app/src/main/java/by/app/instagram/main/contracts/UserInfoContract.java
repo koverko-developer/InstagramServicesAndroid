@@ -27,6 +27,8 @@ public class UserInfoContract {
         void textAnimation(View v);
         void hideProgress();
         void showProgress();
+        void showNoInternetConnection();
+        void showSnackUpdate();
     }
 
     public interface Presenter {
@@ -47,6 +49,8 @@ public class UserInfoContract {
         void addListenerTopLikers();
         void addListenerTopComments();
         void destroyListener();
+        void closeRealm();
+        void initRealm();
     }
 
 }

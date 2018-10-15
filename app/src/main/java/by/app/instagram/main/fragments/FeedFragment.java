@@ -30,6 +30,7 @@ import by.app.instagram.R;
 import by.app.instagram.adapter.AudienceAdapter;
 import by.app.instagram.adapter.FeedAdapter;
 import by.app.instagram.enums.TypeFeed;
+import by.app.instagram.main.MainActivity;
 import by.app.instagram.main.contracts.FeedContract;
 import by.app.instagram.main.presenters.FeedPresenter;
 import by.app.instagram.model.firebase.Image;
@@ -56,6 +57,7 @@ public class FeedFragment extends Fragment implements FeedContract.View, View.On
             img_card_comments_position, img_card_er_position = 0;
 
     ImageView selected_img;
+    MainActivity activity;
 
     TextView tv_empty_list;
     RecyclerView rec_posts;
@@ -64,6 +66,7 @@ public class FeedFragment extends Fragment implements FeedContract.View, View.On
 
     public FeedFragment(Context context) {
         this.context = context;
+        activity = (MainActivity) context;
     }
 
     @Nullable
@@ -146,6 +149,7 @@ public class FeedFragment extends Fragment implements FeedContract.View, View.On
     @Override
     public void initAppBar() {
         img_menu = v.findViewById(R.id.img_menu);
+
         img_filter = v.findViewById(R.id.img_right);
         tv_fragment_title = v.findViewById(R.id.title_bar);
 
@@ -153,7 +157,8 @@ public class FeedFragment extends Fragment implements FeedContract.View, View.On
         img_menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                activity.showMenu();
+                YoYo.with(Techniques.RubberBand).duration(500).playOn(img_menu);
             }
         });
 

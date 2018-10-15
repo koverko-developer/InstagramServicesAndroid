@@ -3,6 +3,12 @@ package by.app.instagram.main.presenters;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -17,6 +23,8 @@ import by.app.instagram.db.Prefs;
 import by.app.instagram.enums.TypePosts;
 import by.app.instagram.main.contracts.PostsContract;
 import by.app.instagram.model.Meta;
+import by.app.instagram.model.ResponseApi;
+import by.app.instagram.model.firebase.Progress;
 import by.app.instagram.model.fui.UserInfoMedia;
 import by.app.instagram.model.pui.ChartItem;
 import by.app.instagram.model.pui.PostsInfo;
@@ -45,6 +53,13 @@ public class PostsPresenter implements PostsContract.Presenter{
     private long period_1;
     private long period_2;
 
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference progress;
+    DatabaseReference info;
+
+    ValueEventListener listenerProgress;
+    ValueEventListener listenerInfo;
+
     public PostsPresenter(PostsContract.ViewModel _view, Context context) {
         this._view = _view;
         this.context = context;
@@ -54,6 +69,9 @@ public class PostsPresenter implements PostsContract.Presenter{
 
     @Override
     public void getUI() {
+
+        addListenerProgress();
+        addListenerInfo();
         _view.showProgress();
         Map<String, String> map = new HashMap<>();
         map.put("access_token", prefs.getLToken());
@@ -99,14 +117,27 @@ public class PostsPresenter implements PostsContract.Presenter{
     @Override
     public void getPostsInfo() {
 
+//        PostsInfo data = postsInfo;
+//        if(data != null){
+//            Log.e(TAG, "set data in cards");
+//            _view.hideProgress();
+//            if(data.getUserInfoMedia() != null){
+//                _view.setValueToCardH(data.getUserInfoMedia());
+//                //_view.addDataToChartLikes(new DatesSort().getDatesFilterAll(data.getChartArr()));
+//                _view.addToValueToLineView(new DatesSort().getDatesFilterAll(data.getChartArr()));
+//                postInfo = data;
+//            }
+//
+//        }
+
         try {
             Map<String, String> map = new HashMap<>();
             map.put("count_media", String.valueOf(count_feed_media));
 
-            Observable<PostsInfo> observable = new ApiServices().getApi().getPostsInfo(String.valueOf(prefs.getLApi()), map);
+            Observable<ResponseBody> observable = new ApiServices().getApi().getPostsInfo(String.valueOf(prefs.getLApi()), map);
             observable.subscribeOn(Schedulers.newThread())
                       .observeOn(AndroidSchedulers.mainThread())
-                      .subscribe(new Subscriber<PostsInfo>() {
+                      .subscribe(new Subscriber<ResponseBody>() {
                           @Override
                           public void onCompleted() {
 
@@ -115,20 +146,31 @@ public class PostsPresenter implements PostsContract.Presenter{
                           @Override
                           public void onError(Throwable e) {
                                 Log.e(TAG, e.toString());
+                                _view.hideProgress();
                           }
 
                           @Override
-                          public void onNext(PostsInfo postsInfo) {
-                              PostsInfo data = postsInfo;
-                              if(data != null){
-                                  Log.e(TAG, "set data in cards");
-                                  _view.hideProgress();
-                                  if(data.getUserInfoMedia() != null){
-                                      _view.setValueToCardH(data.getUserInfoMedia());
-                                      //_view.addDataToChartLikes(new DatesSort().getDatesFilterAll(data.getChartArr()));
-                                      _view.addToValueToLineView(new DatesSort().getDatesFilterAll(data.getChartArr()));
-                                      postInfo = data;
+                          public void onNext(ResponseBody postsInfo) {
+                              try{
+
+                                  if(postsInfo != null){
+                                      String resp = postsInfo.string();
+                                      Gson gson = new Gson();
+
+                                      if(resp.contains("error_type")){
+                                          Meta meta = gson.fromJson(resp, Meta.class);
+                                          String err = meta.getMeta().getErrorMessage();
+                                          _view.hideProgress();
+                                      }else{
+                                          ResponseApi responseApi =
+                                                  gson.fromJson(resp, ResponseApi.class);
+
+                                      }
+
                                   }
+
+                              }
+                              catch (Exception e){
 
                               }
                           }
@@ -246,6 +288,73 @@ public class PostsPresenter implements PostsContract.Presenter{
     @Override
     public void setPeriod2(Long _period2) {
         period_2 = _period2;
+    }
+
+    @Override
+    public void addListenerProgress() {
+        listenerProgress = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                Progress progress = dataSnapshot.getValue(Progress.class);
+
+
+                if(progress != null){
+                    if(progress.isValue()) _view.showProgress();
+                    else _view.hideProgress();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        progress = database.getReference("users/"+prefs.getLApi() + "/posts/progress");
+        progress.addValueEventListener(listenerProgress);
+    }
+
+    @Override
+    public void addListenerInfo() {
+        listenerInfo = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                GenericTypeIndicator<Map<String, Object>> genericTypeIndicator =
+                        new GenericTypeIndicator<Map<String, Object>>();
+                Map<String, Object> value = dataSnapshot.getValue(genericTypeIndicator);
+
+                if(value != null){
+//                    Gson gson = new Gson();
+//                    PostsInfo data = gson.fromJson(value, PostsInfo.class);
+//                    if(data != null) {
+//                        if(data.getUserInfoMedia() != null){
+//                        _view.setValueToCardH(data.getUserInfoMedia());
+//                        //_view.addDataToChartLikes(new DatesSort().getDatesFilterAll(data.getChartArr()));
+//                        _view.addToValueToLineView(new DatesSort().getDatesFilterAll(data.getChartArr()));
+//                        postInfo = data;
+//                        }
+//                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        info = database.getReference("users/"+prefs.getLApi() + "/posts/value");
+        info.addValueEventListener(listenerInfo);
+    }
+
+    @Override
+    public void destroyListeners() {
+
+
+
     }
 
 

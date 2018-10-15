@@ -22,6 +22,7 @@ public interface MainContract {
         void initMenu();
         void transactionFragment();
         void clickMenu(TypeMenu _type, TextView _tv, ImageView _img);
+        void showMenu();
     }
 
     interface Presenter {

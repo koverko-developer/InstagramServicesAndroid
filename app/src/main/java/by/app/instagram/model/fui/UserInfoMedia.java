@@ -70,8 +70,8 @@ public class UserInfoMedia {
         return count_carousel;
     }
 
-    public void setCount_corousel(int count_corousel) {
-        this.count_carousel = count_corousel;
+    public void setCount_corousel(int _count_corousel) {
+        count_carousel = _count_corousel;
     }
 
     public String getNext_url() {

@@ -51,6 +51,9 @@ public class PostsContract {
         void setCountsPosts(int _count);
         void setPeriod1(Long _period1);
         void setPeriod2(Long _perio2);
+        void addListenerProgress();
+        void addListenerInfo();
+        void destroyListeners();
 
     }
 

@@ -6,6 +6,8 @@ import io.realm.RealmObject;
 
 public class UserInfoTop extends RealmObject{
 
+    public void UserInfo(){}
+
     @SerializedName("username")
     public String username;
 

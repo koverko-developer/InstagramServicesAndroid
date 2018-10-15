@@ -1,6 +1,10 @@
 package by.app.instagram.main.presenters;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
@@ -10,9 +14,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import by.app.instagram.api.ApiServices;
 import by.app.instagram.db.Prefs;
@@ -69,57 +78,74 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
         prefs = new Prefs(context);
         setUserInfoObserve();
         try {
-            //Realm.deleteRealm(Realm.getDefaultConfiguration());
-            Realm.init(context);
-            realm = Realm.getDefaultInstance();
+            initRealm();
             checkInternet();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+
+
     @Override
     public void checkInternet() {
-        final RealmResults<TopLikersR> topLikes =
-              realm.where(TopLikersR.class).findAll();
-        if(topLikes != null && topLikes.size() !=0 ) _view.addCardViewMedia3Info(topLikes.get(topLikes.size() -1).getTopLikers());
 
-        final RealmResults<TopCommentsR> topComments =
-                realm.where(TopCommentsR.class).findAll();
-        if(topComments != null && topComments.size() !=0 ) _view.addCardViewMedia4Info(topComments.get(topComments.size()-1).getTopLikers());
+        ConnectivityManager connMgr = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
-        final RealmResults<UserInfoRealm> userInfo =
-                realm.where(UserInfoRealm.class).findAll();
-        if(userInfo != null && userInfo.size() != 0) {
-            VKUserInfo info = new VKUserInfo();
-            Data d = new Data();
-            d.setProfilePicture(userInfo.get(userInfo.size()-1).getProfile());
-            Counts counts = new Counts();
-            counts.setFollowedBy(userInfo.get(userInfo.size()-1).getFollowed_by());
-            counts.setFollows(userInfo.get(userInfo.size()-1).getFollows());
-            d.setmCounts(counts);
-            info.setmData(d);
-            _view.setCardViewUI(info);
+        if (networkInfo != null && networkInfo.isConnected()) {
+
+            if(!prefs.getUIFirst()) {
+                getUI();
+                //_view.showSnackUpdate();
+            }
+            else getUI();
+
+            addListenerProgress();
+            addListenerInfo();
+            addListenerTopLikers();
+            addListenerTopComments();
+
+        }else {
+            _view.showNoInternetConnection();
+            final RealmResults<TopLikersR> topLikes =
+                    realm.where(TopLikersR.class).findAll();
+            if(topLikes != null && topLikes.size() !=0 ) _view.addCardViewMedia3Info(topLikes.get(topLikes.size() -1).getTopLikers());
+
+            final RealmResults<TopCommentsR> topComments =
+                    realm.where(TopCommentsR.class).findAll();
+            if(topComments != null && topComments.size() !=0 ) _view.addCardViewMedia4Info(topComments.get(topComments.size()-1).getTopLikers());
+
+            final RealmResults<UserInfoRealm> userInfo =
+                    realm.where(UserInfoRealm.class).findAll();
+            if(userInfo != null && userInfo.size() != 0) {
+                VKUserInfo info = new VKUserInfo();
+                Data d = new Data();
+                d.setProfilePicture(userInfo.get(userInfo.size()-1).getProfile());
+                Counts counts = new Counts();
+                counts.setFollowedBy(userInfo.get(userInfo.size()-1).getFollowed_by());
+                counts.setFollows(userInfo.get(userInfo.size()-1).getFollows());
+                d.setmCounts(counts);
+                info.setmData(d);
+                _view.setCardViewUI(info);
+            }
+
+            final RealmResults<UserMediaR> infoMedia =
+                    realm.where(UserMediaR.class).findAll();
+            if(infoMedia != null && infoMedia.size() !=0 ) {
+                UserInfoMedia media = new UserInfoMedia();
+                media.setCount_comments(infoMedia.get(infoMedia.size()-1).getCount_comments());
+                media.setCount_corousel(infoMedia.get(infoMedia.size()-1).getCount_corousel());
+                media.setCount_like(infoMedia.get(infoMedia.size()-1).getCount_like());
+                media.setCount_view(infoMedia.get(infoMedia.size()-1).getCount_view());
+                media.setCount_video(infoMedia.get(infoMedia.size()-1).getCount_video());
+                media.setCount_photo(infoMedia.get(infoMedia.size()-1).getCount_photo());
+                _view.addCardViewMediaInfo(media);
+                _view.addCardViewMedia2Info(media);
+            }
         }
-
-        final RealmResults<UserMediaR> infoMedia =
-                realm.where(UserMediaR.class).findAll();
-        if(infoMedia != null && infoMedia.size() !=0 ) {
-            UserInfoMedia media = new UserInfoMedia();
-            media.setCount_comments(infoMedia.get(infoMedia.size()-1).getCount_comments());
-            media.setCount_corousel(infoMedia.get(infoMedia.size()-1).getCount_corousel());
-            media.setCount_like(infoMedia.get(infoMedia.size()-1).getCount_like());
-            media.setCount_view(infoMedia.get(infoMedia.size()-1).getCount_view());
-            media.setCount_video(infoMedia.get(infoMedia.size()-1).getCount_video());
-            media.setCount_photo(infoMedia.get(infoMedia.size()-1).getCount_photo());
-            _view.addCardViewMediaInfo(media);
-            _view.addCardViewMedia2Info(media);
-        }
-        getUI();
-        addListenerProgress();
-        addListenerInfo();
-        addListenerTopLikers();
-        addListenerTopComments();
 
     }
 
@@ -130,6 +156,7 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
     @Override
     public void getUI() {
         //_view.showProgress();
+        prefs.setUIFirst(false);
         Map<String, String> map = new HashMap<>();
         map.put("access_token", prefs.getLToken());
         Observable<ResponseBody> observable = new ApiServices().getApi().getUserInfo(map);
@@ -475,7 +502,16 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
         listenerTopLikers = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
+                List<UserInfoTop> userInfoTops = new ArrayList<>();
+                for (DataSnapshot data :dataSnapshot.getChildren()
+                     ) {
+                    UserInfoTop top = data.getValue(UserInfoTop.class);
+                    if(top != null) {
+                        if(userInfoTops.size() < 5) userInfoTops.add(top);
+                    }
+                }
+                if(userInfoTops.size() != 0)arrToRealmTopLikers(userInfoTops);
+                _view.addCardViewMedia3Info(userInfoTops);
 
             }
 
@@ -492,9 +528,20 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
     @Override
     public void addListenerTopComments() {
         listenerTopComments = new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
+                List<UserInfoTop> userInfoTops = new ArrayList<>();
+                for (DataSnapshot data :dataSnapshot.getChildren()
+                        ) {
+                    UserInfoTop top = data.getValue(UserInfoTop.class);
+                    if(top != null) {
+                        if(userInfoTops.size() < 5) userInfoTops.add(top);
+                    }
+                }
+                if(userInfoTops.size() != 0)arrToRealmTopComments(userInfoTops);
+                _view.addCardViewMedia4Info(userInfoTops);
 
             }
 
@@ -510,7 +557,25 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
 
     @Override
     public void destroyListener() {
-        progress.removeEventListener(listenerProgress);
-        info.removeEventListener(listenerinfo);
+        try {
+            progress.removeEventListener(listenerProgress);
+            info.removeEventListener(listenerinfo);
+            topLikers.removeEventListener(listenerTopLikers);
+            topComments.removeEventListener(listenerTopComments);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
+    @Override
+    public void closeRealm() {
+        realm.close();
+    }
+
+    @Override
+    public void initRealm() {
+        realm = Realm.getDefaultInstance();
+    }
+
+
 }

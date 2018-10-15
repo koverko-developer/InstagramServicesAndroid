@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,7 +15,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -26,6 +29,8 @@ import java.util.List;
 import by.app.instagram.R;
 import by.app.instagram.adapter.TopCommentsUsersAdapter;
 import by.app.instagram.adapter.TopLikerUsersAdapter;
+import by.app.instagram.db.MyTexyUtil;
+import by.app.instagram.main.MainActivity;
 import by.app.instagram.main.contracts.UserInfoContract;
 import by.app.instagram.main.presenters.UserInfoPresenter;
 import by.app.instagram.model.fui.UserInfoMedia;
@@ -40,17 +45,19 @@ public class UserInfoFragment extends Fragment implements UserInfoContract.ViewM
 
     TextView tv_followed_by, tv_follows, tv_count_photo, tv_count_slider, tv_count_video,
              tv_count_likes, tv_count_comments, tv_count_views;
-    ImageView img_ava;
+    ImageView img_ava, img_menu;
     CardView card_h, card_2, card_3, card_4, card_5;
     RecyclerView rec_top_likers, rec_top_comments;
     CardView progress;
-
+    RelativeLayout rrel;
     UserInfoPresenter _presenter;
+    MainActivity activity;
 
     private LinearLayoutManager mLayoutManager;
 
     public UserInfoFragment(Context context) {
         this.context = context;
+        activity = (MainActivity) context;
     }
 
     @Nullable
@@ -70,12 +77,30 @@ public class UserInfoFragment extends Fragment implements UserInfoContract.ViewM
 
     @Override
     public void onResume() {
+        _presenter.addListenerTopComments();
+        _presenter.addListenerInfo();
+        _presenter.addListenerTopComments();
+        _presenter.addListenerProgress();
         super.onResume();
     }
 
     @Override
-    public void initCardViewUI() {
+    public void onStart() {
+        _presenter.initRealm();
+        super.onStart();
+    }
 
+    @Override
+    public void initCardViewUI() {
+        img_menu = v.findViewById(R.id.img_menu);
+        img_menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                activity.showMenu();
+                YoYo.with(Techniques.RubberBand).duration(500).playOn(img_menu);
+            }
+        });
+        rrel = v.findViewById(R.id.rrel);
         card_h = v.findViewById(R.id.card);
         tv_followed_by = v.findViewById(R.id.followed_by);
         tv_follows = v.findViewById(R.id.follows);
@@ -131,12 +156,12 @@ public class UserInfoFragment extends Fragment implements UserInfoContract.ViewM
 
         long followed_by = viewUI.getmData().getmCounts().getFollowedBy();
         if(followed_by != 0) {
-            tv_followed_by.setText(String.valueOf(followed_by));
+            tv_followed_by.setText(MyTexyUtil.countsLong(followed_by));
         }
 
         long follows = viewUI.getmData().getmCounts().getFollows();
         if(follows != 0) {
-            tv_follows.setText(String.valueOf(follows));
+            tv_follows.setText(MyTexyUtil.countsLong(follows));
         }
 
         textAnimation(tv_follows);
@@ -146,9 +171,9 @@ public class UserInfoFragment extends Fragment implements UserInfoContract.ViewM
     @Override
     public void addCardViewMediaInfo(UserInfoMedia media) {
 
-        tv_count_photo.setText(String.valueOf(media.getCount_photo()));
-        tv_count_slider.setText(String.valueOf(media.getCount_corousel()));
-        tv_count_video.setText(String.valueOf(media.getCount_video()));
+        tv_count_photo.setText(MyTexyUtil.countsInt(media.getCount_photo()));
+        tv_count_slider.setText(MyTexyUtil.countsInt(media.getCount_corousel()));
+        tv_count_video.setText(MyTexyUtil.countsInt(media.getCount_video()));
 
         textAnimation(tv_count_photo);
         textAnimation(tv_count_slider);
@@ -158,9 +183,9 @@ public class UserInfoFragment extends Fragment implements UserInfoContract.ViewM
     @Override
     public void addCardViewMedia2Info(UserInfoMedia media) {
 
-        tv_count_likes.setText(String.valueOf(media.getCount_like()));
-        tv_count_comments.setText(String.valueOf(media.getCount_comments()));
-        tv_count_views.setText(String.valueOf(media.getCount_view()));
+        tv_count_likes.setText(MyTexyUtil.countsInt(media.getCount_like()));
+        tv_count_comments.setText(MyTexyUtil.countsInt(media.getCount_comments()));
+        tv_count_views.setText(MyTexyUtil.countsInt(media.getCount_view()));
     }
 
     @Override
@@ -249,5 +274,31 @@ public class UserInfoFragment extends Fragment implements UserInfoContract.ViewM
     public void showProgress() {
         progress = v.findViewById(R.id.progress);
         progress.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void showNoInternetConnection() {
+        Toast.makeText(v.getContext(), getResources().getString(R.string.err_connection_internet),
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showSnackUpdate() {
+        Snackbar snackbar = Snackbar.make(getView(),
+                getResources().getString(R.string.update_data), 6000);
+        snackbar.setAction(getResources().getString(R.string.yes), new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                _presenter.getUI();
+            }
+        });
+        snackbar.show();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        _presenter.destroyListener();
+        _presenter.closeRealm();
     }
 }

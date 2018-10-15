@@ -3,6 +3,7 @@ package by.app.instagram.model.firebase;
 import java.util.ArrayList;
 import java.util.Comparator;
 
+import by.app.instagram.db.Prefs;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 
@@ -142,7 +143,30 @@ public class MediaObject extends RealmObject{
         }
     };
 
+    public static Comparator<MediaObject> MediaERComparatorReverse = new Comparator<MediaObject>() {
+        @Override
+        public int compare(MediaObject mediaObject, MediaObject t1) {
+
+            double l1 = mediaObject.er;
+            double l2 = t1.er;
+
+            return Double.compare(l2, l1);
+        }
+    };
+
+    public static Comparator<MediaObject> MediaERComparator = new Comparator<MediaObject>() {
+        @Override
+        public int compare(MediaObject mediaObject, MediaObject t1) {
+
+            double l1 = mediaObject.er;
+            double l2 = t1.er;
+
+            return Double.compare(l1, l2);
+        }
+    };
+
     public double getEr() {
+
         return er;
     }
 

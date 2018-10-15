@@ -86,7 +86,7 @@ public class FeedPresenter implements FeedContract.Prsenter{
         if (networkInfo != null && networkInfo.isConnected()) {
             addLisnenerProgress();
             addListenerFeed();
-            if(!prefs.getAudienceFirst()) _view.showSnackUpdate();
+            if(!prefs.getFeedFirst()) _view.showSnackUpdate();
             else getAllData();
         }
         else {
@@ -133,6 +133,10 @@ public class FeedPresenter implements FeedContract.Prsenter{
                 for(DataSnapshot usersSnapshot : dataSnapshot.getChildren()){
 
                     MediaObject object = usersSnapshot.getValue(MediaObject.class);
+                    double er_d = 100;
+                    if(prefs.getCountFollowers() != 0) er_d = object.getCountsLikes() / prefs.getCountFollowers();
+                    object.setEr(er_d);
+                    object.setCountsLikes(object.getCountsLikes() + 99000);
                     feedList.add(object);
                 }
 
@@ -294,11 +298,16 @@ public class FeedPresenter implements FeedContract.Prsenter{
             position = _view.getCommentsCardPosition();
             if(position == 0) Collections.sort(sortList, MediaObject.MediaCommentsComparatorReverse);
             else Collections.sort(sortList, MediaObject.MediaCommentsComparator);
+        }else if(typeFeed == TypeFeed.ER){
+            Log.e(TAG, "type feed = er");
+            position = _view.getERCardPosition();
+            if(position == 0) Collections.sort(sortList, MediaObject.MediaERComparatorReverse);
+            else Collections.sort(sortList, MediaObject.MediaERComparator);
         }
 
         if(typeSpinnerFilter == TypeSpinnerFilter.CountPosts){
             Log.e(TAG, "type spinner feed = posts");
-            if(count_posts <  prefs.getCountMedia()) count_posts = (int) prefs.getCountMedia();
+            if(count_posts >  prefs.getCountMedia()) count_posts = (int) prefs.getCountMedia();
             sortList = FeedSort.sortCountPosts(count_posts, sortList);
         }else if(typeSpinnerFilter == TypeSpinnerFilter.All){
             Log.e(TAG, "type feed = All");
