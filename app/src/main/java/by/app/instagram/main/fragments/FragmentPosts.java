@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
@@ -568,6 +569,25 @@ public class FragmentPosts extends Fragment implements PostsContract.ViewModel,
     }
 
     @Override
+    public void showSnackUpdate() {
+        Snackbar snackbar = Snackbar.make(img_filter,
+                getResources().getString(R.string.update_data), 6000);
+        snackbar.setAction(getResources().getString(R.string.yes), new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                _presenter.getUI();
+            }
+        });
+        snackbar.show();
+    }
+
+    @Override
+    public void showNoInternetConnection() {
+        Toast.makeText(v.getContext(), getResources().getString(R.string.err_connection_internet),
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void onClick(View view) {
 
         int id = view.getId();
@@ -601,5 +621,17 @@ public class FragmentPosts extends Fragment implements PostsContract.ViewModel,
     @Override
     public void clickApply() {
         String d = "";
+    }
+
+    @Override
+    public void onStop() {
+        _presenter.destroyListeners();
+        super.onStop();
+    }
+
+    @Override
+    public void onResume() {
+        _presenter.chechInternet();
+        super.onResume();
     }
 }

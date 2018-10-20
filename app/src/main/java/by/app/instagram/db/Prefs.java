@@ -24,6 +24,7 @@ public class Prefs {
     private static final String APP_PREFERENCES_STALKERS_f = "stalkers_first";
     private static final String APP_PREFERENCES_UI_f = "userinfo_first";
     private static final String APP_PREFERENCES_FEED_f = "feed_first";
+    private static final String APP_PREFERENCES_POSTS_f = "posts_first";
     private SharedPreferences mSettings;
 
     public Prefs(Context context) {
@@ -144,6 +145,16 @@ public class Prefs {
 
     public boolean  getUIFirst(){
         return mSettings.getBoolean(APP_PREFERENCES_UI_f, true);
+    }
+
+    public void setPostsFirst(boolean b){
+        SharedPreferences.Editor editor = mSettings.edit();
+        editor.putBoolean(APP_PREFERENCES_POSTS_f, b);
+        editor.apply();
+    }
+
+    public boolean  getPostsFirst(){
+        return mSettings.getBoolean(APP_PREFERENCES_POSTS_f, true);
     }
 
     public void setFeedFirst(boolean b){

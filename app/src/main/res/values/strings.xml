@@ -61,5 +61,10 @@
     <string name="er">ER</string>
     <string name="feed_empty_list">Публикаций не найдено...</string>
     <string name="fragment_profile">Профиль</string>
+    <string name="fragment_hashtags_promotion">Хэштеги для продвижения</string>
+    <string name="exit">Выход</string>
+    <string name="your_hashtags">Ваши хэштеги</string>
+    <string name="favotite">Избранное</string>
+    <string name="title_activity_list_hashtags"></string>
 
 </resources>

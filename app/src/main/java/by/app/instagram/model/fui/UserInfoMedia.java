@@ -2,7 +2,11 @@ package by.app.instagram.model.fui;
 
 import com.google.gson.annotations.SerializedName;
 
-public class UserInfoMedia {
+import io.realm.RealmObject;
+
+public class UserInfoMedia extends RealmObject{
+
+    public void UserInfoMedia(){}
 
     @SerializedName("count_like")
     public int count_like;

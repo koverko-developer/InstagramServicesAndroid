@@ -1,13 +1,14 @@
 package by.app.instagram.main.presenters;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
@@ -19,17 +20,23 @@ import java.util.Map;
 import by.app.instagram.api.ApiServices;
 import by.app.instagram.db.DatesSort;
 import by.app.instagram.db.PostFilterSort;
+import by.app.instagram.db.PostsDB;
 import by.app.instagram.db.Prefs;
 import by.app.instagram.enums.TypePosts;
 import by.app.instagram.main.contracts.PostsContract;
 import by.app.instagram.model.Meta;
 import by.app.instagram.model.ResponseApi;
+import by.app.instagram.model.firebase.MediaObject;
 import by.app.instagram.model.firebase.Progress;
 import by.app.instagram.model.fui.UserInfoMedia;
 import by.app.instagram.model.pui.ChartItem;
 import by.app.instagram.model.pui.PostsInfo;
+import by.app.instagram.model.realm.FeedMediaR;
+import by.app.instagram.model.realm.PostInfoR;
 import by.app.instagram.model.vk.VKUserInfo;
 import by.app.instagram.view.filter.TypeSpinnerFilter;
+import io.realm.Realm;
+import io.realm.RealmResults;
 import okhttp3.ResponseBody;
 import rx.Observable;
 import rx.Subscriber;
@@ -44,6 +51,7 @@ public class PostsPresenter implements PostsContract.Presenter{
     Context context;
 
     Prefs prefs;
+    PostsDB postsDB;
 
     int count_feed_media = 0;
     public PostsInfo postInfo = new PostsInfo();
@@ -60,18 +68,68 @@ public class PostsPresenter implements PostsContract.Presenter{
     ValueEventListener listenerProgress;
     ValueEventListener listenerInfo;
 
+    Realm realm;
+
     public PostsPresenter(PostsContract.ViewModel _view, Context context) {
         this._view = _view;
         this.context = context;
         prefs = new Prefs(context);
+        postsDB = new PostsDB(context);
+        Realm.init(context);
+        realm = Realm.getDefaultInstance();
         getUI();
     }
 
     @Override
-    public void getUI() {
+    public void chechInternet() {
 
-        addListenerProgress();
-        addListenerInfo();
+        ConnectivityManager connMgr = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+        if (networkInfo != null && networkInfo.isConnected()) {
+            addListenerInfo();
+            addListenerProgress();
+            if(!prefs.getPostsFirst()) _view.showSnackUpdate();
+            else getUI();
+        }
+        else {
+            _view.showNoInternetConnection();
+            getFromRealm();
+        }
+
+    }
+
+    @Override
+    public void addToRealm() {
+
+        if(postInfo != null){
+
+           postsDB.setPostInfo(postInfo);
+
+        }
+    }
+
+    @Override
+    public void getFromRealm() {
+
+        PostsInfo value = postsDB.getPostInfo();
+
+        if(value != null && !value.equals("0")){
+            if(value.getUserInfoMedia() != null){
+                _view.setValueToCardH(value.getUserInfoMedia());
+                //_view.addDataToChartLikes(new DatesSort().getDatesFilterAll(data.getChartArr()));
+                _view.addToValueToLineView(new DatesSort().getDatesFilterAll(value.getChartArr()));
+                postInfo = value;
+                if(postInfo != null) addToRealm();
+            }
+        }
+
+    }
+
+    @Override
+    public void getUI() {
+        prefs.setPostsFirst(false);
         _view.showProgress();
         Map<String, String> map = new HashMap<>();
         map.put("access_token", prefs.getLToken());
@@ -321,22 +379,20 @@ public class PostsPresenter implements PostsContract.Presenter{
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                GenericTypeIndicator<Map<String, Object>> genericTypeIndicator =
-                        new GenericTypeIndicator<Map<String, Object>>();
-                Map<String, Object> value = dataSnapshot.getValue(genericTypeIndicator);
+//                GenericTypeIndicator<Map<String, Object>> genericTypeIndicator =
+//                        new GenericTypeIndicator<Map<String, Object>>();
+//                Map<String, Object> value = dataSnapshot.getValue(genericTypeIndicator);
+
+                PostsInfo value = dataSnapshot.getValue(PostsInfo.class);
 
                 if(value != null){
-//                    Gson gson = new Gson();
-//                    PostsInfo data = gson.fromJson(value, PostsInfo.class);
-//                    if(data != null) {
-//                        if(data.getUserInfoMedia() != null){
-//                        _view.setValueToCardH(data.getUserInfoMedia());
-//                        //_view.addDataToChartLikes(new DatesSort().getDatesFilterAll(data.getChartArr()));
-//                        _view.addToValueToLineView(new DatesSort().getDatesFilterAll(data.getChartArr()));
-//                        postInfo = data;
-//                        }
-//                    }
-
+                 if(value.getUserInfoMedia() != null){
+                        _view.setValueToCardH(value.getUserInfoMedia());
+                        //_view.addDataToChartLikes(new DatesSort().getDatesFilterAll(data.getChartArr()));
+                        _view.addToValueToLineView(new DatesSort().getDatesFilterAll(value.getChartArr()));
+                        postInfo = value;
+                        if(postInfo != null) addToRealm();
+                        }
                 }
             }
 
@@ -353,9 +409,16 @@ public class PostsPresenter implements PostsContract.Presenter{
     @Override
     public void destroyListeners() {
 
+        try{
+            info.removeEventListener(listenerInfo);
+            progress.removeEventListener(listenerProgress);
+        }catch (Exception e){
 
+        }
 
     }
+
+
 
 
 }

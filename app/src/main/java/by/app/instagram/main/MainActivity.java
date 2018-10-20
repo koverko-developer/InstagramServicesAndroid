@@ -37,6 +37,7 @@ import by.app.instagram.main.fragments.AudienceFragment;
 import by.app.instagram.main.fragments.FeedFragment;
 import by.app.instagram.main.fragments.FragmentLogin;
 import by.app.instagram.main.fragments.FragmentPosts;
+import by.app.instagram.main.fragments.FragmentPromotionHashtags;
 import by.app.instagram.main.fragments.StalkersFragment;
 import by.app.instagram.main.fragments.UserHashtagFragment;
 import by.app.instagram.main.fragments.UserInfoFragment;
@@ -60,13 +61,13 @@ public class MainActivity extends AppCompatActivity
     Prefs prefs;
 
     RelativeLayout rel_profile, rel_feed, rel_posts, rel_audience, rel_hashtags,
-                   rel_stalkers, rel_exit;
+                   rel_stalkers,rel_hashtags_promotion, rel_exit;
 
     ImageView img_profile,img_feed, img_posts, img_audience, img_hashtags,
-              img_stalkers, img_exit;
+              img_stalkers, img_hashtags_promotion, img_exit;
 
     TextView tv_profile, tv_feed, tv_posts, tv_audience, tv_hashtags,
-             tv_stalkers, tv_exit;
+             tv_stalkers, tv_hashtags_promotion, tv_exit;
 
 
     @Override
@@ -193,6 +194,8 @@ public class MainActivity extends AppCompatActivity
         rel_audience = (RelativeLayout) findViewById(R.id.rel_audience);
         rel_stalkers = (RelativeLayout) findViewById(R.id.rel_stalkers);
         rel_hashtags = (RelativeLayout) findViewById(R.id.rel_hashtags);
+        rel_hashtags_promotion = (RelativeLayout) findViewById(R.id.rel_hashtags_promotion);
+        rel_exit = (RelativeLayout) findViewById(R.id.rel_exit);
 
         img_profile = (ImageView) findViewById(R.id.menu_img_profile);
         img_feed = (ImageView) findViewById(R.id.menu_img_feed);
@@ -200,6 +203,8 @@ public class MainActivity extends AppCompatActivity
         img_audience = (ImageView) findViewById(R.id.menu_img_audience);
         img_stalkers = (ImageView) findViewById(R.id.menu_img_stalkers);
         img_hashtags = (ImageView) findViewById(R.id.menu_img_hashtags);
+        img_hashtags_promotion = (ImageView) findViewById(R.id.menu_img_hashtags_promotion);
+        img_exit = (ImageView) findViewById(R.id.menu_img_exit);
 
         tv_profile = (TextView) findViewById(R.id.menu_tv_profile);
         tv_feed = (TextView) findViewById(R.id.menu_tv_feed);
@@ -207,6 +212,8 @@ public class MainActivity extends AppCompatActivity
         tv_audience = (TextView) findViewById(R.id.menu_tv_audience);
         tv_stalkers = (TextView) findViewById(R.id.menu_tv_stalkers);
         tv_hashtags = (TextView) findViewById(R.id.menu_tv_hashtags);
+        tv_hashtags_promotion = (TextView) findViewById(R.id.menu_tv_hashtags_promotion);
+        tv_exit = (TextView) findViewById(R.id.menu_tv_exit);
 
         rel_profile.setOnClickListener(this);
         rel_feed.setOnClickListener(this);
@@ -214,6 +221,8 @@ public class MainActivity extends AppCompatActivity
         rel_audience.setOnClickListener(this);
         rel_stalkers.setOnClickListener(this);
         rel_hashtags.setOnClickListener(this);
+        rel_hashtags_promotion.setOnClickListener(this);
+        rel_exit.setOnClickListener(this);
     }
 
     @Override
@@ -307,8 +316,8 @@ public class MainActivity extends AppCompatActivity
             toggle.syncState();
 
 
-            //fragment = new UserInfoFragment(MainActivity.this);
-            fragment = new FragmentPosts(MainActivity.this);
+            fragment = new UserInfoFragment(MainActivity.this);
+            //fragment = new FragmentPosts(MainActivity.this);
 //            fragment = new AudienceFragment(MainActivity.this);
             //fragment = new UserHashtagFragment(MainActivity.this);
             //fragment = new StalkersFragment(MainActivity.this);
@@ -368,6 +377,14 @@ public class MainActivity extends AppCompatActivity
                 clickMenu(TypeMenu.HashtagsUser, tv_hashtags, img_hashtags);
                 fragment = new UserHashtagFragment(MainActivity.this);
                 transactionFragment();
+                break;
+            case R.id.rel_hashtags_promotion:
+                clickMenu(TypeMenu.HashtagsPromotion, tv_hashtags_promotion, img_hashtags_promotion);
+                fragment = new FragmentPromotionHashtags(MainActivity.this);
+                transactionFragment();
+                break;
+            case R.id.rel_exit:
+                exit();
                 break;
         }
     }

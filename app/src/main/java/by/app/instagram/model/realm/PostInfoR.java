@@ -1,20 +1,20 @@
-package by.app.instagram.model.pui;
+package by.app.instagram.model.realm;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
 import by.app.instagram.model.fui.UserInfoMedia;
-import io.realm.Realm;
+import by.app.instagram.model.pui.ChartItem;
+import by.app.instagram.model.pui.PostsInfo;
+import io.realm.RealmList;
 import io.realm.RealmObject;
 
-public class PostsInfo{
+public class PostInfoR extends RealmObject{
 
     @SerializedName("userInfoMedia")
     public UserInfoMedia userInfoMedia;
 
-    @SerializedName("chartArr")
-    public List<ChartItem> chartArr;
 
     public UserInfoMedia getUserInfoMedia() {
         return userInfoMedia;
@@ -24,11 +24,4 @@ public class PostsInfo{
         this.userInfoMedia = userInfoMedia;
     }
 
-    public List<ChartItem> getChartArr() {
-        return chartArr;
-    }
-
-    public void setChartArr(List<ChartItem> chartArr) {
-        this.chartArr = chartArr;
-    }
 }

@@ -3,8 +3,11 @@ package by.app.instagram.model.pui;
 import com.google.gson.annotations.SerializedName;
 
 import by.app.instagram.model.fui.UserInfoMedia;
+import io.realm.RealmObject;
 
-public class ChartItem {
+public class ChartItem extends RealmObject{
+
+    public ChartItem(){}
 
     @SerializedName("mediaType")
     public int mediaType;

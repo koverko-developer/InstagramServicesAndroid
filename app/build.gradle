@@ -48,14 +48,15 @@ dependencies {
     implementation 'im.dacer:AndroidCharts:1.0.4'
     implementation 'com.google.firebase:firebase-database:11.8.0'
     implementation 'com.google.android.gms:play-services-ads:11.8.0'
+    implementation 'com.nex3z:flow-layout:1.2.4'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.4.0'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
 
-allprojects{
-    repositories{
-        maven { url 'https://jitpack.io'}
+allprojects {
+    repositories {
+        maven { url 'https://jitpack.io' }
     }
 }
 

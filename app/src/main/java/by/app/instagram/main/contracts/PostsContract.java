@@ -40,6 +40,8 @@ public class PostsContract {
         LineDataSet getDataSet(ArrayList<Entry> entryArrayList);
         void addToValueToLineView(List<ChartItem> list);
         void animRotate(View view, int type);
+        void showSnackUpdate();
+        void showNoInternetConnection();
     }
 
     public interface Presenter {
@@ -54,6 +56,9 @@ public class PostsContract {
         void addListenerProgress();
         void addListenerInfo();
         void destroyListeners();
+        void chechInternet();
+        void addToRealm();
+        void getFromRealm();
 
     }
 

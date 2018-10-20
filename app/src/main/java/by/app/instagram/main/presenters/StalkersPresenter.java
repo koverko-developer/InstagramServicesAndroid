@@ -194,7 +194,7 @@ public class StalkersPresenter implements StalkersContract.Presenter{
                     StalkersObject object = usersSnapshot.getValue(StalkersObject.class);
                     if(object != null)
                     {
-                        if(list_all.size() < 101) list_all.add(object);
+                        if(list_all.size() < 20) list_all.add(object);
                     }
 
                 }
