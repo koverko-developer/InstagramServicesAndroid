@@ -24,6 +24,9 @@ import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +35,7 @@ import by.app.instagram.R;
 import by.app.instagram.adapter.AudienceAdapter;
 import by.app.instagram.db.AudienceDatesSort;
 import by.app.instagram.enums.TypeAudience;
+import by.app.instagram.main.MainActivity;
 import by.app.instagram.main.contracts.AudienceContract;
 import by.app.instagram.main.presenters.AudiencePresenter;
 import by.app.instagram.model.firebase.AudienceObject;
@@ -64,11 +68,13 @@ public class AudienceFragment extends Fragment implements AudienceContract.View,
     FilterView filter;
 
     AudiencePresenter _presenter;
+    MainActivity activity;
 
-
+    private AdView mAdView;
 
     public AudienceFragment(Context context) {
         this.context = context;
+        activity = (MainActivity) context;
     }
 
     @Nullable
@@ -115,7 +121,7 @@ public class AudienceFragment extends Fragment implements AudienceContract.View,
         img_menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                activity.showMenu();
             }
         });
 
@@ -392,7 +398,7 @@ public class AudienceFragment extends Fragment implements AudienceContract.View,
     @Override
     public void showSnackUpdate() {
 
-        Snackbar snackbar = Snackbar.make(img_filter,
+        Snackbar snackbar = Snackbar.make(img_menu,
                 getResources().getString(R.string.update_data), 6000);
         snackbar.setAction(getResources().getString(R.string.yes), new View.OnClickListener() {
             @Override
@@ -402,6 +408,17 @@ public class AudienceFragment extends Fragment implements AudienceContract.View,
         });
         snackbar.show();
 
+    }
+
+    @Override
+    public void initAds() {
+        MobileAds.initialize(getContext(), getResources().getString(R.string.ad_id1));
+        mAdView = (AdView) v.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .build();
+
+        // Start loading the ad in the background.
+        mAdView.loadAd(adRequest);
     }
 
     @Override

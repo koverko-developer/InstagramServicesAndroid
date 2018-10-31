@@ -3,6 +3,7 @@ package by.app.instagram.main.fragments;
 import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,12 +24,16 @@ import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.List;
 
 import by.app.instagram.R;
 import by.app.instagram.adapter.StalkersAdapter;
 import by.app.instagram.adapter.UserHashTagsAdapter;
+import by.app.instagram.main.MainActivity;
 import by.app.instagram.main.contracts.StalkersContract;
 import by.app.instagram.main.presenters.StalkersPresenter;
 import by.app.instagram.model.firebase.StalkersObject;
@@ -45,15 +50,18 @@ public class StalkersFragment extends Fragment implements StalkersContract.View{
 
     CardView progress;
 
-    ImageView img_menu, img_filter;
-    TextView tv_fragment_title, tv_empty_list;
+    ImageView img_menu, img_filter, img;
+    TextView tv_fragment_title, tv_empty_list, txt;
 
     RecyclerView rec_users;
 
     FilterView filter;
+    MainActivity activity;
+    private AdView mAdView;
 
     public StalkersFragment(Context context) {
         this.context = context;
+        activity = (MainActivity) context;
     }
 
     @Nullable
@@ -73,8 +81,9 @@ public class StalkersFragment extends Fragment implements StalkersContract.View{
     @Override
     public void initCardH() {
 
-       tv_empty_list = v.findViewById(R.id.empty_list);
-       rec_users = v.findViewById(R.id.rec_users);
+        img = (ImageView) v.findViewById(R.id.img_1);
+        tv_empty_list = v.findViewById(R.id.empty_list);
+        rec_users = v.findViewById(R.id.rec_users);
 
     }
 
@@ -88,7 +97,7 @@ public class StalkersFragment extends Fragment implements StalkersContract.View{
         img_menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                activity.showMenu();
             }
         });
 
@@ -234,15 +243,31 @@ public class StalkersFragment extends Fragment implements StalkersContract.View{
 
     @Override
     public void showSnackUpdate() {
-        Snackbar snackbar = Snackbar.make(img_filter,
-                getResources().getString(R.string.update_data), 6000);
-        snackbar.setAction(getResources().getString(R.string.yes), new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                _presenter.getAllData();
-            }
-        });
-        snackbar.show();
+        try {
+            Snackbar snackbar = Snackbar.make(v.findViewById(R.id.img_1),
+                    getResources().getString(R.string.update_data), 6000);
+            snackbar.setAction(getResources().getString(R.string.yes), new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    _presenter.getAllData();
+                }
+            });
+
+            snackbar.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void initAds() {
+        MobileAds.initialize(getContext(), getResources().getString(R.string.ad_id1));
+        mAdView = (AdView) v.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .build();
+
+        // Start loading the ad in the background.
+        mAdView.loadAd(adRequest);
     }
 
     @Override

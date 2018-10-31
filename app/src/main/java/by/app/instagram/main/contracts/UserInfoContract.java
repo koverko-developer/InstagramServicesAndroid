@@ -29,6 +29,7 @@ public class UserInfoContract {
         void showProgress();
         void showNoInternetConnection();
         void showSnackUpdate();
+        void initAds();
     }
 
     public interface Presenter {

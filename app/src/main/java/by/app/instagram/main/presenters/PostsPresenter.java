@@ -33,6 +33,9 @@ import by.app.instagram.model.pui.ChartItem;
 import by.app.instagram.model.pui.PostsInfo;
 import by.app.instagram.model.realm.FeedMediaR;
 import by.app.instagram.model.realm.PostInfoR;
+import by.app.instagram.model.vk.Counts;
+import by.app.instagram.model.vk.Data;
+import by.app.instagram.model.vk.PrivateUserInfo;
 import by.app.instagram.model.vk.VKUserInfo;
 import by.app.instagram.view.filter.TypeSpinnerFilter;
 import io.realm.Realm;
@@ -132,42 +135,50 @@ public class PostsPresenter implements PostsContract.Presenter{
         prefs.setPostsFirst(false);
         _view.showProgress();
         Map<String, String> map = new HashMap<>();
-        map.put("access_token", prefs.getLToken());
+        //map.put("access_token", prefs.getLToken());
+        map.put("userId", String.valueOf(prefs.getLApi()));
         Observable<ResponseBody> observable = new ApiServices().getApi().getUserInfo(map);
         observable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<ResponseBody>() {
-                    @Override
-                    public void onCompleted() {
+                .subscribe(data -> {
+                    try {
+                        Log.e(TAG, "response gui()");
+                        String resp = data.string();
+                        Gson gson = new Gson();
+                        if(resp.contains("error_type")){
+                            Meta meta = gson.fromJson(resp, Meta.class);
+                            String err = meta.getMeta().getErrorMessage();
+                            getUI();
+                        }else {
 
-                    }
+                            PrivateUserInfo info =
+                                    gson.fromJson(resp, PrivateUserInfo.class);
+                            String sd = "";
+                            VKUserInfo vkUserInfo = new VKUserInfo();
+                            Data d = new Data();
+                            d.setProfilePicture(info.getPicture());
+                            d.setFullName(info.getFullName());
+                            d.setUsername(info.getUsername());
+                            d.setId(String.valueOf(info.getId()));
+                            Counts counts = new Counts();
+                            counts.setFollows((long) info.getFollowingCount());
+                            counts.setFollowedBy((long) info.getFollowerCount());
+                            counts.setMedia((long) info.getMediaCount());
+                            d.setmCounts(counts);
+                            vkUserInfo.setmData(d);
 
-                    @Override
-                    public void onError(Throwable e) {
+                            checkMediaRange(vkUserInfo.getmData().getmCounts().getMedia());
+                            prefs.setCountMedia(vkUserInfo.getmData().getmCounts().getMedia());
+                            prefs.setCountFollowers(vkUserInfo.getmData().getmCounts().getFollowedBy().intValue());
 
-                    }
-
-                    @Override
-                    public void onNext(ResponseBody responseBody) {
-                        ResponseBody data = responseBody;
-                        try {
-                            String resp = data.string();
-                            Gson gson = new Gson();
-                            if(resp.contains("error_type")){
-                                Meta meta = gson.fromJson(resp, Meta.class);
-                                String err = meta.getMeta().getErrorMessage();
-                                getUI();
-                            }else {
-                                VKUserInfo vkUserInfo
-                                        = gson.fromJson(resp, VKUserInfo.class);
-                                checkMediaRange(vkUserInfo.getmData().getmCounts().getMedia());
-                                getPostsInfo();
-                            }
-
-                            String ds = resp;
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                            checkMediaRange(vkUserInfo.getmData().getmCounts().getMedia());
+                            getPostsInfo();
                         }
+
+                        String ds = resp;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+
                     }
                 });
     }
@@ -255,6 +266,7 @@ public class PostsPresenter implements PostsContract.Presenter{
             }
         }
         //count_feed_media = 28;
+        Log.e(TAG, "count feed medias = "+count_media);
 
     }
 

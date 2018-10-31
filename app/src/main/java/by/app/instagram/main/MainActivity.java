@@ -26,7 +26,12 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+
 import java.util.Map;
+import java.util.Random;
 
 import by.app.instagram.R;
 import by.app.instagram.contracts.GeneralContract;
@@ -69,6 +74,7 @@ public class MainActivity extends AppCompatActivity
     TextView tv_profile, tv_feed, tv_posts, tv_audience, tv_hashtags,
              tv_stalkers, tv_hashtags_promotion, tv_exit;
 
+    InterstitialAd interstitial;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +107,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onPostResume() {
         //checkLogin();
+        ads();
         super.onPostResume();
     }
 
@@ -241,7 +248,7 @@ public class MainActivity extends AppCompatActivity
     public void clickMenu(TypeMenu _type, TextView _tv, ImageView _img) {
 
         TextView[] tv_arr = new TextView[]{tv_profile, tv_feed, tv_posts, tv_audience,
-                tv_stalkers, tv_hashtags};
+                tv_stalkers, tv_hashtags, tv_exit, tv_hashtags_promotion};
         for (TextView tv : tv_arr){
             tv.setTextColor(getResources().getColor(R.color.text_dark));
 
@@ -259,12 +266,48 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void ads() {
+        Random random = new Random();
+        int i = random.nextInt(4);
+        if(i == 1){
+            MobileAds.initialize(this, getResources().getString(R.string.ad_id1));
+            interstitial = new InterstitialAd(this);
+            interstitial.setAdUnitId(getResources().getString(R.string.ad_inter1));
+            AdRequest adRequesti = new AdRequest.Builder().build();
+            interstitial.loadAd(adRequesti);
+        }else {
+            MobileAds.initialize(this, getResources().getString(R.string.ad_id2));
+            interstitial = new InterstitialAd(this);
+            interstitial.setAdUnitId(getResources().getString(R.string.ad_inter2));
+            AdRequest adRequesti = new AdRequest.Builder().build();
+            interstitial.loadAd(adRequesti);
+        }
+    }
+
+    @Override
+    public void showAds() {
+        if (interstitial.isLoaded()) {
+            interstitial.show();
+            ads();
+        }
+    }
+
+    @Override
     public void checkLogin() {
 
-        if(!prefs.isLoginInsta() || !prefs.isLoginPopster()) initLoginFragment();
-        else if(prefs.isLoginApi()) initView();
-        else loginApi();
+//        if(!prefs.isLoginInsta() || !prefs.isLoginPopster()) initLoginFragment();
+//        else if(prefs.isLoginApi()) initView();
+//        else loginApi();
 
+        if(prefs.isLoginApi()) initView();
+        else initLoginFragment();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        showAds();
     }
 
     @Override

@@ -42,6 +42,7 @@ public class PostsContract {
         void animRotate(View view, int type);
         void showSnackUpdate();
         void showNoInternetConnection();
+        void initAds();
     }
 
     public interface Presenter {

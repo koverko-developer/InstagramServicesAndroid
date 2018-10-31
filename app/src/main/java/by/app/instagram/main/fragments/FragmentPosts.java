@@ -27,12 +27,16 @@ import com.daimajia.androidanimations.library.YoYo;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import by.app.instagram.R;
 import by.app.instagram.enums.TypePosts;
+import by.app.instagram.main.MainActivity;
 import by.app.instagram.main.contracts.PostsContract;
 import by.app.instagram.main.presenters.PostsPresenter;
 import by.app.instagram.model.fui.UserInfoMedia;
@@ -68,8 +72,13 @@ public class FragmentPosts extends Fragment implements PostsContract.ViewModel,
     LineView chartLikes, chartComments, chartViews;
     FilterView filter;
 
+    MainActivity activity;
+
+    private AdView mAdView;
+
     public FragmentPosts(Context context) {
         this.context = context;
+        activity = (MainActivity) context;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -297,7 +306,7 @@ public class FragmentPosts extends Fragment implements PostsContract.ViewModel,
         img_menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                activity.showMenu();
             }
         });
 
@@ -585,6 +594,18 @@ public class FragmentPosts extends Fragment implements PostsContract.ViewModel,
     public void showNoInternetConnection() {
         Toast.makeText(v.getContext(), getResources().getString(R.string.err_connection_internet),
                 Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void initAds() {
+
+        MobileAds.initialize(getContext(), getResources().getString(R.string.ad_id1));
+        mAdView = (AdView) v.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .build();
+
+        // Start loading the ad in the background.
+        mAdView.loadAd(adRequest);
     }
 
     @Override

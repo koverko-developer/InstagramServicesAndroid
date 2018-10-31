@@ -39,6 +39,7 @@ import by.app.instagram.model.realm.UserInfoRealm;
 import by.app.instagram.model.realm.UserMediaR;
 import by.app.instagram.model.vk.Counts;
 import by.app.instagram.model.vk.Data;
+import by.app.instagram.model.vk.PrivateUserInfo;
 import by.app.instagram.model.vk.VKUserInfo;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -155,15 +156,18 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
 
     @Override
     public void getUI() {
-        //_view.showProgress();
+        Log.e(TAG, "start gui()");
+        _view.showProgress();
         prefs.setUIFirst(false);
         Map<String, String> map = new HashMap<>();
-        map.put("access_token", prefs.getLToken());
+        //map.put("access_token", prefs.getLToken());
+        map.put("userId", String.valueOf(prefs.getLApi()));
         Observable<ResponseBody> observable = new ApiServices().getApi().getUserInfo(map);
         observable.subscribeOn(Schedulers.newThread())
                   .observeOn(AndroidSchedulers.mainThread())
                   .subscribe(data -> {
                       try {
+                          Log.e(TAG, "response gui()");
                           String resp = data.string();
                           Gson gson = new Gson();
                           if(resp.contains("error_type")){
@@ -171,8 +175,23 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
                               String err = meta.getMeta().getErrorMessage();
                               getUI();
                           }else {
-                              VKUserInfo vkUserInfo
-                                      = gson.fromJson(resp, VKUserInfo.class);
+
+                              PrivateUserInfo info =
+                                      gson.fromJson(resp, PrivateUserInfo.class);
+                              String sd = "";
+                              VKUserInfo vkUserInfo = new VKUserInfo();
+                              Data d = new Data();
+                              d.setProfilePicture(info.getPicture());
+                              d.setFullName(info.getFullName());
+                              d.setUsername(info.getUsername());
+                              d.setId(String.valueOf(info.getId()));
+                              Counts counts = new Counts();
+                              counts.setFollows((long) info.getFollowingCount());
+                              counts.setFollowedBy((long) info.getFollowerCount());
+                              counts.setMedia((long) info.getMediaCount());
+                              d.setmCounts(counts);
+                              vkUserInfo.setmData(d);
+
                               checkMediaRange(vkUserInfo.getmData().getmCounts().getMedia());
                               _view.setCardViewUI(vkUserInfo);
                               prefs.setCountMedia(vkUserInfo.getmData().getmCounts().getMedia());
@@ -185,6 +204,7 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
                           String ds = resp;
                       } catch (Exception e) {
                           e.printStackTrace();
+
                       }
                   });
 
@@ -307,7 +327,7 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
                                 if(resp.contains("error_type")){
                                     Meta meta = gson.fromJson(resp, Meta.class);
                                     String err = meta.getMeta().getErrorMessage();
-                                    _view.hideProgress();
+                                    //_view.hideProgress();
                                 }else{
                                     ResponseApi responseApi =
                                             gson.fromJson(resp, ResponseApi.class);
@@ -364,7 +384,7 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
                                 if(resp.contains("error_type")){
                                     Meta meta = gson.fromJson(resp, Meta.class);
                                     String err = meta.getMeta().getErrorMessage();
-                                    _view.hideProgress();
+                                    //_view.hideProgress();
                                 }else{
                                     ResponseApi responseApi =
                                             gson.fromJson(resp, ResponseApi.class);

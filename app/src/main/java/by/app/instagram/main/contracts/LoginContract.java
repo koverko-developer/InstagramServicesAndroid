@@ -8,6 +8,8 @@ public interface LoginContract {
         void initWVLoginPopster();
         void setLogin();
         void setCookie();
+        void initView();
+        void login();
     }
 
     interface Presenter {

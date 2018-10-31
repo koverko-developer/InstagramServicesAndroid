@@ -5,6 +5,7 @@ public class CategoryObject {
     String name;
     String icon;
     String color;
+    String key;
 
     public String getName() {
         return name;
@@ -28,5 +29,13 @@ public class CategoryObject {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }

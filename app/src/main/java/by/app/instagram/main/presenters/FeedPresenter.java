@@ -136,7 +136,7 @@ public class FeedPresenter implements FeedContract.Prsenter{
                     double er_d = 100;
                     if(prefs.getCountFollowers() != 0) er_d = object.getCountsLikes() / prefs.getCountFollowers();
                     object.setEr(er_d);
-                    object.setCountsLikes(object.getCountsLikes() + 99000);
+                    object.setCountsLikes(object.getCountsLikes());
                     feedList.add(object);
                 }
 

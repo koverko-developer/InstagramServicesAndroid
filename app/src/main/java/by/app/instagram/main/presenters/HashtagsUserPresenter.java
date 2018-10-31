@@ -212,7 +212,6 @@ public class HashtagsUserPresenter implements UserHashtagContract.Presenter{
                     }
 
                 }
-                if(list_all.size() > 10)
                 _view.setRecyclerAll(list_all);
                 _view.hideProgress();
             }

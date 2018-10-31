@@ -25,6 +25,9 @@ import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.List;
 
@@ -43,7 +46,7 @@ public class UserHashtagFragment extends Fragment implements UserHashtagContract
 
     private static String TAG = UserHashtagFragment.class.getName();
 
-    ImageView img_menu, img_filter;
+    ImageView img_menu, img_filter, img;
     TextView tv_fragment_title;
     CardView progress;
 
@@ -57,6 +60,8 @@ public class UserHashtagFragment extends Fragment implements UserHashtagContract
     TextView tv_empty_hashtags;
     LinearLayout lin_all_data;
     RecyclerView rec_popular, rec_count_likes, rec_count_comments;
+
+    private AdView mAdView;
 
     public UserHashtagFragment(Context contex) {
         this.contex = contex;
@@ -89,6 +94,7 @@ public class UserHashtagFragment extends Fragment implements UserHashtagContract
     @Override
     public void initAppBar() {
 
+        img = (ImageView) v.findViewById(R.id.img_1);
         img_menu = v.findViewById(R.id.img_menu);
         img_filter = v.findViewById(R.id.img_right);
         tv_fragment_title = v.findViewById(R.id.title_bar);
@@ -140,7 +146,7 @@ public class UserHashtagFragment extends Fragment implements UserHashtagContract
 
     @Override
     public void showSnackUpdate() {
-        Snackbar snackbar = Snackbar.make(img_filter,
+        Snackbar snackbar = Snackbar.make(img,
                 getResources().getString(R.string.update_data), 6000);
         snackbar.setAction(getResources().getString(R.string.yes), new View.OnClickListener() {
             @Override
@@ -186,6 +192,17 @@ public class UserHashtagFragment extends Fragment implements UserHashtagContract
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         rec_count_comments.setLayoutManager(mLayoutManager);
         rec_count_comments.setAdapter(adapter);
+    }
+
+    @Override
+    public void initAds() {
+        MobileAds.initialize(getContext(), getResources().getString(R.string.ad_id1));
+        mAdView = (AdView) v.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .build();
+
+        // Start loading the ad in the background.
+        mAdView.loadAd(adRequest);
     }
 
 }

@@ -3,6 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginTop="8dp"
     android:padding="16dp">
 
     <LinearLayout
@@ -21,39 +24,54 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="16dp"
-                android:layout_toLeftOf="@+id/fab_favorite"
+                android:layout_toLeftOf="@+id/fab_language"
                 android:text="Gjgekzhyjttttttttttttttt"
                 android:textColor="@color/black"
                 android:textSize="18sp" />
 
-            <android.support.design.widget.FloatingActionButton
+            <RelativeLayout
                 android:id="@+id/fap_copy"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                app:fabSize="mini" />
+                android:background="@drawable/fab_circle">
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fab_favorite"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_centerInParent="true"
+                    app:srcCompat="@drawable/ic_content_copy_black_24dp" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/fab_language"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="16dp"
                 android:layout_toLeftOf="@+id/fap_copy"
-                app:fabSize="mini" />
+                android:background="@drawable/fab_circle">
 
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/ic_favorite_border_black_24dp"
+                    app:srcCompat="@drawable/ic_favorite_border_black_24dp" />
+
+            </RelativeLayout>
 
         </RelativeLayout>
 
         <com.nex3z.flowlayout.FlowLayout
             android:id="@+id/flow"
-            app:flChildSpacing="auto"
-            app:flChildSpacingForLastRow="align"
-            app:flRowSpacing="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"></com.nex3z.flowlayout.FlowLayout>
+            android:layout_marginTop="8dp"
+            app:flChildSpacing="8dp"
+            app:flRowSpacing="8dp"></com.nex3z.flowlayout.FlowLayout>
 
     </LinearLayout>
 

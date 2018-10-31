@@ -25,6 +25,8 @@ public class Prefs {
     private static final String APP_PREFERENCES_UI_f = "userinfo_first";
     private static final String APP_PREFERENCES_FEED_f = "feed_first";
     private static final String APP_PREFERENCES_POSTS_f = "posts_first";
+    private static final String APP_PREFERENCES_FAVOTITE_HASHTAGS = "favorite_hashtags";
+    private static final String APP_PREFERENCES_MY_HASHTAGS = "my_hashtags";
     private SharedPreferences mSettings;
 
     public Prefs(Context context) {
@@ -180,6 +182,26 @@ public class Prefs {
     public void setCountFollowers(int b){
         SharedPreferences.Editor editor = mSettings.edit();
         editor.putInt(APP_PREFERENCES_USER_count_followers, b);
+        editor.apply();
+    }
+
+    public String getAllFavorites(){
+        return mSettings.getString(APP_PREFERENCES_FAVOTITE_HASHTAGS, "0");
+    }
+
+    public void setFavorites(String _str){
+        SharedPreferences.Editor editor = mSettings.edit();
+        editor.putString(APP_PREFERENCES_FAVOTITE_HASHTAGS, _str);
+        editor.apply();
+    }
+
+    public String getAllMy(){
+        return mSettings.getString(APP_PREFERENCES_MY_HASHTAGS, "0");
+    }
+
+    public void setMy(String _str){
+        SharedPreferences.Editor editor = mSettings.edit();
+        editor.putString(APP_PREFERENCES_MY_HASHTAGS, _str);
         editor.apply();
     }
 

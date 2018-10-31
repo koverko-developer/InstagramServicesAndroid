@@ -19,6 +19,7 @@ public class StalkersContract {
         void animRotate(android.view.View view, int type);
         void setRecycler(List<StalkersObject> _list);
         void showSnackUpdate();
+        void initAds();
 
     }
     public interface Presenter{

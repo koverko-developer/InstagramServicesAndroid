@@ -1,5 +1,7 @@
 package by.app.instagram.model.firebase;
 
+import java.util.Comparator;
+
 import io.realm.RealmObject;
 
 public class StalkersObject extends RealmObject{
@@ -60,4 +62,15 @@ public class StalkersObject extends RealmObject{
     public void setUname(String uname) {
         this.uname = uname;
     }
+
+    public static Comparator<StalkersObject> StalkersComparator = new Comparator<StalkersObject>() {
+        @Override
+        public int compare(StalkersObject mediaObject, StalkersObject t1) {
+
+            int l1 = mediaObject.col_like;
+            int l2 = t1.col_like;
+
+            return Integer.compare(l2, l1);
+        }
+    };
 }

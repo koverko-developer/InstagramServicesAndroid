@@ -17,6 +17,7 @@ public class UserHashtagContract {
         void setRecyclerAll(List<HashTagObject> list);
         void setRecyclerLikes(List<HashTagObject> list);
         void setRecyclerComments(List<HashTagObject> list);
+        void initAds();
     }
 
     public interface Presenter {

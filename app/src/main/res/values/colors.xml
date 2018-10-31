@@ -8,5 +8,7 @@
     <color name="black">#000000</color>
     <color name="accent_text">#009789</color>
     <color name="text_dark">#af000000</color>
-    <color name="favorite">#fff200</color>
+    <color name="favorite">#f5ec36</color>
+    <color name="background_recycler">#f4f4f4</color>
+
 </resources>

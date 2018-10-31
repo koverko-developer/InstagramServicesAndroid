@@ -3,6 +3,7 @@ package by.app.instagram.main.fragments;
 import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,6 +24,9 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.List;
 
@@ -53,6 +57,8 @@ public class UserInfoFragment extends Fragment implements UserInfoContract.ViewM
     UserInfoPresenter _presenter;
     MainActivity activity;
 
+    private AdView mAdView;
+
     private LinearLayoutManager mLayoutManager;
 
     public UserInfoFragment(Context context) {
@@ -70,6 +76,7 @@ public class UserInfoFragment extends Fragment implements UserInfoContract.ViewM
         initCardViewMedia2UI();
         initCardViewMedia3UI();
         initCardViewMedia4UI();
+        initAds();
         if(_presenter == null) _presenter = new UserInfoPresenter(v.getContext(), this);
 
         return v;
@@ -293,6 +300,21 @@ public class UserInfoFragment extends Fragment implements UserInfoContract.ViewM
             }
         });
         snackbar.show();
+    }
+
+    @Override
+    public void initAds() {
+        try {
+            MobileAds.initialize(getContext(), getResources().getString(R.string.ad_id2));
+            mAdView = (AdView) v.findViewById(R.id.adView);
+            AdRequest adRequest = new AdRequest.Builder()
+                    .build();
+
+            // Start loading the ad in the background.
+            mAdView.loadAd(adRequest);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

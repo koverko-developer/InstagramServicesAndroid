@@ -18,11 +18,15 @@ import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.List;
 
@@ -42,7 +46,7 @@ import by.app.instagram.view.filter.TypeSpinnerFilter;
 @SuppressLint("ValidFragment")
 public class FeedFragment extends Fragment implements FeedContract.View, View.OnClickListener {
 
-    ImageView img_menu, img_filter;
+    ImageView img_menu, img_filter, img;
     TextView tv_fragment_title;
     FilterView filter;
 
@@ -61,8 +65,11 @@ public class FeedFragment extends Fragment implements FeedContract.View, View.On
 
     TextView tv_empty_list;
     RecyclerView rec_posts;
+    RelativeLayout rel_cards;
 
     FeedPresenter _presenter;
+
+    private AdView mAdView;
 
     public FeedFragment(Context context) {
         this.context = context;
@@ -86,7 +93,7 @@ public class FeedFragment extends Fragment implements FeedContract.View, View.On
 
         tv_empty_list = v.findViewById(R.id.empty_list);
         rec_posts = v.findViewById(R.id.rec_posts);
-
+        img = (ImageView) v.findViewById(R.id.img_1);
         card_date = v.findViewById(R.id.card_h1);
         card_likes = v.findViewById(R.id.card_h2);
         card_comments = v.findViewById(R.id.card_h3);
@@ -101,6 +108,8 @@ public class FeedFragment extends Fragment implements FeedContract.View, View.On
         card_likes.setOnClickListener(this);
         card_comments.setOnClickListener(this);
         card_er.setOnClickListener(this);
+
+        rel_cards = (RelativeLayout) v.findViewById(R.id.rel_cards);
 
         selected_img = img_card_date;
     }
@@ -291,7 +300,7 @@ public class FeedFragment extends Fragment implements FeedContract.View, View.On
 
     @Override
     public void showSnackUpdate() {
-        Snackbar snackbar = Snackbar.make(img_filter,
+        Snackbar snackbar = Snackbar.make(img,
                 getResources().getString(R.string.update_data), 6000);
         snackbar.setAction(getResources().getString(R.string.yes), new View.OnClickListener() {
             @Override
@@ -329,6 +338,17 @@ public class FeedFragment extends Fragment implements FeedContract.View, View.On
     @Override
     public int getERCardPosition() {
         return this.img_card_er_position;
+    }
+
+    @Override
+    public void initAds() {
+        MobileAds.initialize(getContext(), getResources().getString(R.string.ad_id1));
+        mAdView = (AdView) v.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .build();
+
+        // Start loading the ad in the background.
+        mAdView.loadAd(adRequest);
     }
 
     @Override

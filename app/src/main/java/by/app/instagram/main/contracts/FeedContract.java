@@ -29,6 +29,7 @@ public class FeedContract {
         int getLieksCardPosition();
         int getCommentsCardPosition();
         int getERCardPosition();
+        void initAds();
     }
 
     public interface Prsenter{

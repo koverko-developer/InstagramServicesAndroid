@@ -1,6 +1,7 @@
 package by.app.instagram.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
@@ -17,6 +18,8 @@ import com.bumptech.glide.request.RequestOptions;
 import java.util.List;
 
 import by.app.instagram.R;
+import by.app.instagram.main.ListHashtagsActivity;
+import by.app.instagram.main.MainActivity;
 import by.app.instagram.model.firebase.AudienceObject;
 import by.app.instagram.model.firebase.CategoryObject;
 
@@ -47,22 +50,34 @@ public class CategoryHashtagsAdapter extends RecyclerView.Adapter {
         if (holder instanceof CategoryHashtagsHolder) {
 
             final CategoryObject item = (CategoryObject) list.get(position);
+            String key = null;
+            String name = null;
             if(item.getName() != null)
                 ((CategoryHashtagsHolder) holder).text.setText(item.getName());
 
-            if(item.getIcon() != null)
+            if(item.getIcon() != null){
+                name = item.getName();
+                key = item.getKey();
                 Glide.with(context).load(item.getIcon())
                         .into(((CategoryHashtagsHolder) holder).fab);
+            }
             else {
-                if(position == 0)
+                if(position == 0){
+                    name = context.getResources().getString(R.string.your_hashtags);
+                    key = "0";
                     Glide.with(context).load(R.drawable.ic_add_black_24dp)
-                        .into(((CategoryHashtagsHolder) holder).fab);
-                else if(position == 1)
+                            .into(((CategoryHashtagsHolder) holder).fab);
+                }
+                else if(position == 1){
+                    key = "1";
+                    name = context.getResources().getString(R.string.favotite);
                     Glide.with(context).load(R.drawable.ic_favorite_border_black_24dp)
                             .into(((CategoryHashtagsHolder) holder).fab);
+                }
             }
-            if(item.getColor() != null)
+            if(item.getColor() != null){
                 ((CategoryHashtagsHolder) holder).fab.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(item.getColor())));
+            }
             else {
                 if(position == 0)
                     ((CategoryHashtagsHolder) holder).fab.setBackgroundTintList(ColorStateList
@@ -71,6 +86,20 @@ public class CategoryHashtagsAdapter extends RecyclerView.Adapter {
                     ((CategoryHashtagsHolder) holder).fab.setBackgroundTintList(ColorStateList
                         .valueOf(context.getResources().getColor(R.color.favorite)));
             }
+
+            String finalKey = key;
+            String finalName = name;
+            ((CategoryHashtagsHolder) holder).fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    MainActivity activity = (MainActivity) context;
+                    Intent intent = new Intent(activity, ListHashtagsActivity.class);
+                    intent.putExtra("key", finalKey);
+                    intent.putExtra("name", finalName);
+                    activity.startActivity(intent);
+
+                }
+            });
         }
     }
 

@@ -21,13 +21,32 @@ import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import by.app.instagram.R;
+import by.app.instagram.api.ApiServices;
 import by.app.instagram.contracts.GeneralContract;
 import by.app.instagram.db.Prefs;
 import by.app.instagram.main.MainActivity;
 import by.app.instagram.main.contracts.LoginContract;
+import by.app.instagram.model.Meta;
+import by.app.instagram.model.vk.Counts;
+import by.app.instagram.model.vk.Data;
+import by.app.instagram.model.vk.PrivateUserInfo;
+import by.app.instagram.model.vk.VKUserInfo;
+import okhttp3.ResponseBody;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 import static android.content.ContentValues.TAG;
 
@@ -41,12 +60,17 @@ public class FragmentLogin extends Fragment implements LoginContract.ViewModel,G
     boolean isConnect = false;
     boolean isError = false;
     Prefs prefs;
+    MainActivity activity;
+
+    EditText et_login, et_password;
+    Button btn_sign;
 
     @SuppressLint("ValidFragment")
     public FragmentLogin(Context context) {
         this.context = context;
         h = new Handler();
         prefs = new Prefs(context);
+        activity = (MainActivity) context;
     }
 
     Runnable internet = new Runnable() {
@@ -63,7 +87,10 @@ public class FragmentLogin extends Fragment implements LoginContract.ViewModel,G
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
 
         v = inflater.inflate(R.layout.fragment_login, container, false);
-        h.post(internet);
+        //h.post(internet);
+
+        initView();
+
         return v;
     }
 
@@ -158,6 +185,105 @@ public class FragmentLogin extends Fragment implements LoginContract.ViewModel,G
 
     }
 
+    @Override
+    public void initView() {
+
+        et_login = (EditText) v.findViewById(R.id.et_login);
+        et_password = (EditText) v.findViewById(R.id.et_password);
+        btn_sign = (Button) v.findViewById(R.id.btn_sign);
+        btn_sign.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void onClick(View view) {
+                checkInternetConnection();
+            }
+        });
+
+    }
+
+    @Override
+    public void login() {
+
+        String login = et_login.getText().toString();
+        String pass = et_password.getText().toString();
+
+        if(login.isEmpty()){
+            Toast.makeText(context,
+                    context.getResources().getString(R.string.empty_login), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if(pass.isEmpty()) {
+            Toast.makeText(context,
+                    context.getResources().getString(R.string.empty_password), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Log.e(TAG, "start login");
+
+        Map<String, String> map = new HashMap();
+        //map.put("access_token", prefs.getLToken());
+        map.put("login", login);
+        map.put("pass", pass);
+        //map.put("access_token", "4234234");
+        map.put("cookie", prefs.getLCookie());
+        Observable<ResponseBody> observable = new ApiServices().getApi().login(map);
+        observable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<ResponseBody>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(ResponseBody responseBody) {
+                        try {
+                            String resp = responseBody.string();
+                            Gson gson = new Gson();
+                            if(resp.contains("err")){
+                                Meta meta = gson.fromJson(resp, Meta.class);
+                                String err = meta.getMeta().getErrorMessage();
+                                Toast.makeText(context,
+                                        context.getResources().getString(R.string.error_login_or_password), Toast.LENGTH_SHORT).show();
+                                //view.checkLogin();
+                            }else {
+
+                                PrivateUserInfo info =
+                                        gson.fromJson(resp, PrivateUserInfo.class);
+                                String sd = "";
+                                VKUserInfo vkUserInfo = new VKUserInfo();
+                                Data d = new Data();
+                                d.setProfilePicture(info.getPicture());
+                                d.setFullName(info.getFullName());
+                                d.setUsername(info.getUsername());
+                                d.setId(String.valueOf(info.getId()));
+                                Counts counts = new Counts();
+                                counts.setFollows((long) info.getFollowingCount());
+                                counts.setFollowedBy((long) info.getFollowerCount());
+                                counts.setMedia((long) info.getMediaCount());
+                                d.setmCounts(counts);
+                                vkUserInfo.setmData(d);
+                                prefs.setLApi(vkUserInfo.getmData().getId());
+                                int c = vkUserInfo.getmData().getmCounts().getFollowedBy().intValue();
+                                prefs.setCountFollowers(c);
+                                prefs.setCountMedia(vkUserInfo.getmData().getmCounts().getMedia());
+                                activity.checkLogin();
+                            }
+                            String ds = resp;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void checkInternetConnection() {
@@ -167,11 +293,13 @@ public class FragmentLogin extends Fragment implements LoginContract.ViewModel,G
 
 
         if (networkInfo != null && networkInfo.isConnected()) {
-            isConnect = true;
-            if(isError) connectSucsefull();
-            if(!prefs.isLoginInsta()) initWVLoginInsta();
-            else if(!prefs.isLoginPopster()) initWVLoginPopster();
+//            isConnect = true;
+//            if(isError) connectSucsefull();
+//            if(!prefs.isLoginInsta()) initWVLoginInsta();
+//            else if(!prefs.isLoginPopster()) initWVLoginPopster();
             //initWVLoginPopster();
+            login();
+
         } else {
             showNoConnectionMessage();
         }

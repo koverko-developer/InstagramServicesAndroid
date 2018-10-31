@@ -66,7 +66,13 @@ public class FeedAdapter extends RecyclerView.Adapter {
                 ((FeedHolder) holder).count_views.setVisibility(View.GONE);
                 ((FeedHolder) holder).img_views.setVisibility(View.GONE);
             }
-            if(item.getText() != null) ((FeedHolder) holder).text.setText(item.getText());
+            if(item.getText() != null) {
+                if(item.getText().isEmpty()){
+                    ((FeedHolder) holder).text.setVisibility(View.GONE);
+                }else {
+                    ((FeedHolder) holder).text.setText(item.getText());
+                }
+            }else ((FeedHolder) holder).text.setVisibility(View.GONE);
             Glide.with(((FeedHolder) holder).img_post.getContext())
                     .load(item.getImages().getUrl())
                     .listener(new RequestListener<Drawable>() {

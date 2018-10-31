@@ -4,6 +4,7 @@ public class ItemHashtag {
 
     String name;
     boolean isCopy = false;
+    boolean isCreated = false;
 
     public String getName() {
         return name;
@@ -19,5 +20,13 @@ public class ItemHashtag {
 
     public void setCopy(boolean copy) {
         isCopy = copy;
+    }
+
+    public boolean isCreated() {
+        return isCreated;
+    }
+
+    public void setCreated(boolean created) {
+        isCreated = created;
     }
 }

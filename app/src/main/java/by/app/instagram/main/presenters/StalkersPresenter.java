@@ -13,6 +13,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,8 @@ public class StalkersPresenter implements StalkersContract.Presenter{
 
     ValueEventListener listenerProgress;
     ValueEventListener listenerStalkers;
+
+    Progress progressO;
 
     List<StalkersObject> list_all = new ArrayList<>();
 
@@ -89,6 +92,9 @@ public class StalkersPresenter implements StalkersContract.Presenter{
                 Progress progress = dataSnapshot.getValue(Progress.class);
 
                 if(progress != null){
+
+                    progressO = progress;
+
                     if(progress.isValue()) _view.showProgress();
                     else _view.hideProgress();
                 }
@@ -187,20 +193,36 @@ public class StalkersPresenter implements StalkersContract.Presenter{
         listenerStalkers = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                  Log.e(TAG, "change listener stalkers");
+                  if(progressO != null && !progressO.isValue()){
+                      list_all.clear();
+                      for(DataSnapshot usersSnapshot : dataSnapshot.getChildren()){
 
-                list_all.clear();
-                for(DataSnapshot usersSnapshot : dataSnapshot.getChildren()){
+                          StalkersObject object = usersSnapshot.getValue(StalkersObject.class);
+                          if(object != null)
+                          {
+                              //if(list_all.size() < 20) list_all.add(object);
+                              list_all.add(object);
+                          }
 
-                    StalkersObject object = usersSnapshot.getValue(StalkersObject.class);
-                    if(object != null)
-                    {
-                        if(list_all.size() < 20) list_all.add(object);
-                    }
+                      }
 
-                }
-                if(list_all.size() > 10)
-                    _view.setRecycler(list_all);
-                _view.hideProgress();
+                      if(list_all != null){
+                          Collections.sort(list_all, StalkersObject.StalkersComparator);
+                      }
+
+                      List<StalkersObject> sl = new ArrayList<>();
+                      if(list_all.size() > 20){
+
+
+                          for(int i = 0; i < 20; i++){
+                              sl.add(list_all.get(i));
+                          }
+                      }
+                      _view.setRecycler(sl);
+
+                      _view.hideProgress();
+                  }
             }
 
             @Override

@@ -9,13 +9,20 @@ import com.google.gson.Gson;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 import by.app.instagram.api.ApiServices;
 import by.app.instagram.contracts.GeneralContract;
 import by.app.instagram.db.Prefs;
 import by.app.instagram.main.contracts.MainContract;
 import by.app.instagram.model.Meta;
+import by.app.instagram.model.vk.Counts;
+import by.app.instagram.model.vk.Data;
+import by.app.instagram.model.vk.PrivateUserInfo;
 import by.app.instagram.model.vk.VKUserInfo;
+import by.app.instagram.workers.MyWorker;
 import okhttp3.ResponseBody;
 import rx.Observable;
 import rx.Subscriber;
@@ -54,7 +61,9 @@ public class MainPresenter implements MainContract.Presenter{
         view.showProgress();
 
         Map<String, String> map = new HashMap();
-        map.put("access_token", prefs.getLToken());
+        //map.put("access_token", prefs.getLToken());
+        map.put("login", "koverko_dev");
+        map.put("pass", "3057686Kowerko1");
         //map.put("access_token", "4234234");
         map.put("cookie", prefs.getLCookie());
         Observable<ResponseBody> observable = new ApiServices().getApi().login(map);
@@ -81,8 +90,22 @@ public class MainPresenter implements MainContract.Presenter{
                                 String err = meta.getMeta().getErrorMessage();
                                 //view.checkLogin();
                             }else {
-                                VKUserInfo vkUserInfo
-                                        = gson.fromJson(resp, VKUserInfo.class);
+
+                                PrivateUserInfo info =
+                                        gson.fromJson(resp, PrivateUserInfo.class);
+                                String sd = "";
+                                VKUserInfo vkUserInfo = new VKUserInfo();
+                                Data d = new Data();
+                                d.setProfilePicture(info.getPicture());
+                                d.setFullName(info.getFullName());
+                                d.setUsername(info.getUsername());
+                                d.setId(String.valueOf(info.getId()));
+                                Counts counts = new Counts();
+                                counts.setFollows((long) info.getFollowingCount());
+                                counts.setFollowedBy((long) info.getFollowerCount());
+                                counts.setMedia((long) info.getMediaCount());
+                                d.setmCounts(counts);
+                                vkUserInfo.setmData(d);
                                 prefs.setLApi(vkUserInfo.getmData().getId());
                                 int c = vkUserInfo.getmData().getmCounts().getFollowedBy().intValue();
                                 prefs.setCountFollowers(c);
@@ -90,6 +113,13 @@ public class MainPresenter implements MainContract.Presenter{
                             }
                             view.hideProgress();
                             view.checkLogin();
+
+
+                            PeriodicWorkRequest request =
+                                    new PeriodicWorkRequest.Builder(MyWorker.class, 15, TimeUnit.MINUTES)
+                                            .build();
+                            WorkManager.getInstance().enqueue(request);
+
                             String ds = resp;
                         } catch (Exception e) {
                             view.hideProgress();

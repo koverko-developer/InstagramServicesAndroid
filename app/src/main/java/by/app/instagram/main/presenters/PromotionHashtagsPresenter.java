@@ -55,7 +55,10 @@ public class PromotionHashtagsPresenter implements PromotionHashtagsContract.Pre
                      ) {
 
                     CategoryObject object = ds.getValue(CategoryObject.class);
-                    if(object != null) list.add(object);
+                    if(object != null) {
+                        object.setKey(ds.getKey());
+                        list.add(object);
+                    }
 
                 }
 
@@ -88,5 +91,7 @@ public class PromotionHashtagsPresenter implements PromotionHashtagsContract.Pre
                 list);
 
     }
+
+
 
 }

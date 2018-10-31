@@ -34,6 +34,7 @@ public class AudienceContract {
         void setUnfollowsTV(int count);
         void setfollowsTV(int count);
         void showSnackUpdate();
+        void initAds();
     }
 
     public interface Presenter {

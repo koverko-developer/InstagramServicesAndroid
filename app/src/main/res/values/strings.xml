@@ -1,4 +1,14 @@
 <resources>
+
+    <string name="ad_id1">ca-app-pub-1774878275661991~2465815506</string>
+    <string name="ad_id2">ca-app-pub-1563785045157371~8952735172</string>
+
+    <string name="ad_ban1">ca-app-pub-1774878275661991/9869377394</string>
+    <string name="ad_ban2">ca-app-pub-1563785045157371/5532774039</string>
+
+    <string name="ad_inter1">ca-app-pub-1774878275661991/5348921720</string>
+    <string name="ad_inter2">ca-app-pub-1563785045157371/5526950894</string>
+
     <string name="app_name">Instagram analytics</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -66,5 +76,14 @@
     <string name="your_hashtags">Ваши хэштеги</string>
     <string name="favotite">Избранное</string>
     <string name="title_activity_list_hashtags"></string>
+    <string name="title_dialog_add">Добавьте свою категорию хэштегов</string>
+    <string name="dialog_add_hint1">Введите название категории</string>
+    <string name="dialog_add_hint2">Введите хэштеги(через пробел)</string>
+    <string name="empty_add_cat">Категория не может быть пустой...</string>
+    <string name="empty_add_hashtags">Поле с хэштегами не может быть пустым...</string>
+    <string name="sign_in">Войти</string>
+    <string name="empty_login">Логин не может быть пустым...</string>
+    <string name="empty_password">Пароль не может быть пустым...</string>
+    <string name="error_login_or_password">Неверный логин или пароль...</string>
 
 </resources>
