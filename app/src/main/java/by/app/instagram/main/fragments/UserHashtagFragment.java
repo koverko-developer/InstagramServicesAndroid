@@ -34,6 +34,7 @@ import java.util.List;
 import by.app.instagram.R;
 import by.app.instagram.adapter.UserHashTagsAdapter;
 import by.app.instagram.db.Prefs;
+import by.app.instagram.main.MainActivity;
 import by.app.instagram.main.contracts.UserHashtagContract;
 import by.app.instagram.main.presenters.HashtagsUserPresenter;
 import by.app.instagram.model.firebase.HashTagObject;
@@ -62,9 +63,11 @@ public class UserHashtagFragment extends Fragment implements UserHashtagContract
     RecyclerView rec_popular, rec_count_likes, rec_count_comments;
 
     private AdView mAdView;
+    MainActivity activity;
 
     public UserHashtagFragment(Context contex) {
         this.contex = contex;
+        activity = (MainActivity) contex;
     }
 
     @Nullable
@@ -103,7 +106,7 @@ public class UserHashtagFragment extends Fragment implements UserHashtagContract
         img_menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                activity.showMenu();
             }
         });
 

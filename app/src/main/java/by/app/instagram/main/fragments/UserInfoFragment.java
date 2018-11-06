@@ -49,7 +49,7 @@ public class UserInfoFragment extends Fragment implements UserInfoContract.ViewM
 
     TextView tv_followed_by, tv_follows, tv_count_photo, tv_count_slider, tv_count_video,
              tv_count_likes, tv_count_comments, tv_count_views;
-    ImageView img_ava, img_menu;
+    ImageView img_ava, img_menu, img_math;
     CardView card_h, card_2, card_3, card_4, card_5;
     RecyclerView rec_top_likers, rec_top_comments;
     CardView progress;
@@ -99,6 +99,7 @@ public class UserInfoFragment extends Fragment implements UserInfoContract.ViewM
 
     @Override
     public void initCardViewUI() {
+        img_math = (ImageView) v.findViewById(R.id.img_math);
         img_menu = v.findViewById(R.id.img_menu);
         img_menu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -291,7 +292,7 @@ public class UserInfoFragment extends Fragment implements UserInfoContract.ViewM
 
     @Override
     public void showSnackUpdate() {
-        Snackbar snackbar = Snackbar.make(getView(),
+        Snackbar snackbar = Snackbar.make(img_math,
                 getResources().getString(R.string.update_data), 6000);
         snackbar.setAction(getResources().getString(R.string.yes), new View.OnClickListener() {
             @Override
@@ -315,6 +316,31 @@ public class UserInfoFragment extends Fragment implements UserInfoContract.ViewM
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void setCardUI(String _img, Long _followers, Long _following) {
+        String p_url = _img;
+        if(p_url != null){
+
+            Glide.with(v.getContext())
+                    .load(p_url)
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(img_ava);
+        }
+
+        long followed_by = _followers;
+        if(followed_by != 0) {
+            tv_followed_by.setText(MyTexyUtil.countsLong(followed_by));
+        }
+
+        long follows = _following;
+        if(follows != 0) {
+            tv_follows.setText(MyTexyUtil.countsLong(follows));
+        }
+
+        textAnimation(tv_follows);
+        textAnimation(tv_followed_by);
     }
 
     @Override

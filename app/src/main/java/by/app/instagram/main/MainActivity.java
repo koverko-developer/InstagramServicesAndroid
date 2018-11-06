@@ -1,6 +1,9 @@
 package by.app.instagram.main;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -25,11 +28,16 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
@@ -47,6 +55,10 @@ import by.app.instagram.main.fragments.StalkersFragment;
 import by.app.instagram.main.fragments.UserHashtagFragment;
 import by.app.instagram.main.fragments.UserInfoFragment;
 import by.app.instagram.main.presenters.MainPresenter;
+import by.app.instagram.workers.AlarmReceiver;
+import by.app.instagram.workers.WorkerHelper;
+
+import static android.content.ContentValues.TAG;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -60,6 +72,9 @@ public class MainActivity extends AppCompatActivity
     ActionBarDrawerToggle toggle;
     NavigationView navigationView;
     ProgressBar progressBar;
+    ImageView img_header;
+
+    private PendingIntent pendingIntent;
 
     MainPresenter _presenter;
 
@@ -76,6 +91,8 @@ public class MainActivity extends AppCompatActivity
 
     InterstitialAd interstitial;
 
+    private static final int ALARM_REQUEST_CODE = 133;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,7 +107,18 @@ public class MainActivity extends AppCompatActivity
 
         if(_presenter == null) _presenter = new MainPresenter(this, this);
 
+        Intent alarmIntent = new Intent(MainActivity.this, AlarmReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(MainActivity.this, ALARM_REQUEST_CODE, alarmIntent, 0);
+
         checkLogin();
+
+        if(!prefs.getLastUpdate().equals("0")){
+            SimpleDateFormat df = new SimpleDateFormat("ss:mm:HH dd-MM-yyyy", Locale.getDefault());
+            String current_day_and_month = df.format(Long.parseLong(prefs.getLastUpdate()));
+            Toast.makeText(this,
+                    getResources().getString(R.string.last_update_ui) +
+                            current_day_and_month, Toast.LENGTH_SHORT).show();
+        }
         //initMenu();
     }
 
@@ -195,6 +223,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void initMenu() {
 
+        img_header = (ImageView) findViewById(R.id.img_header);
+        Glide.with(img_header.getContext()).load(R.drawable.header_menu).into(img_header);
         rel_profile = (RelativeLayout) findViewById(R.id.rel_profile);
         rel_feed = (RelativeLayout) findViewById(R.id.rel_feed);
         rel_posts = (RelativeLayout) findViewById(R.id.rel_posts);
@@ -327,8 +357,7 @@ public class MainActivity extends AppCompatActivity
             Log.d(TAG, "Using clearCookies code for API >=" + String.valueOf(Build.VERSION_CODES.LOLLIPOP_MR1));
             CookieManager.getInstance().removeAllCookies(null);
             CookieManager.getInstance().flush();
-            prefs.setLInsta("0");
-            prefs.setLPopster("0");
+            prefs.clearPrefs();
             checkLogin();
         } else
         {
@@ -340,11 +369,11 @@ public class MainActivity extends AppCompatActivity
             cookieManager.removeSessionCookie();
             cookieSyncMngr.stopSync();
             cookieSyncMngr.sync();
-            prefs.setLInsta("0");
-            prefs.setLPopster("0");
+            prefs.clearPrefs();
             checkLogin();
 
         }
+        drawer.closeDrawer(GravityCompat.START);
     }
 
     @Override

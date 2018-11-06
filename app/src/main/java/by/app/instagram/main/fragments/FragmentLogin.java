@@ -2,7 +2,10 @@ package by.app.instagram.main.fragments;
 
 import android.annotation.SuppressLint;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -23,12 +26,17 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import by.app.instagram.R;
@@ -38,10 +46,12 @@ import by.app.instagram.db.Prefs;
 import by.app.instagram.main.MainActivity;
 import by.app.instagram.main.contracts.LoginContract;
 import by.app.instagram.model.Meta;
+import by.app.instagram.model.firebase.Image;
 import by.app.instagram.model.vk.Counts;
 import by.app.instagram.model.vk.Data;
 import by.app.instagram.model.vk.PrivateUserInfo;
 import by.app.instagram.model.vk.VKUserInfo;
+import by.app.instagram.workers.AlarmReceiver;
 import okhttp3.ResponseBody;
 import rx.Observable;
 import rx.Subscriber;
@@ -52,7 +62,7 @@ import static android.content.ContentValues.TAG;
 
 @SuppressLint("ValidFragment")
 public class FragmentLogin extends Fragment implements LoginContract.ViewModel,GeneralContract{
-
+    private static final int ALARM_REQUEST_CODE = 133;
     Context context;
     View v;
     ProgressBar progressBar;
@@ -61,6 +71,7 @@ public class FragmentLogin extends Fragment implements LoginContract.ViewModel,G
     boolean isError = false;
     Prefs prefs;
     MainActivity activity;
+    ImageView img_logo, img_bg;
 
     EditText et_login, et_password;
     Button btn_sign;
@@ -188,6 +199,7 @@ public class FragmentLogin extends Fragment implements LoginContract.ViewModel,G
     @Override
     public void initView() {
 
+        progressBar = (ProgressBar) v.findViewById(R.id.progress_login);
         et_login = (EditText) v.findViewById(R.id.et_login);
         et_password = (EditText) v.findViewById(R.id.et_password);
         btn_sign = (Button) v.findViewById(R.id.btn_sign);
@@ -198,6 +210,12 @@ public class FragmentLogin extends Fragment implements LoginContract.ViewModel,G
                 checkInternetConnection();
             }
         });
+
+        img_bg = (ImageView) v.findViewById(R.id.img_bg);
+        img_logo = (ImageView) v.findViewById(R.id.img_logo);
+
+        Glide.with(v.getContext()).load(R.drawable.login_header).into(img_bg);
+        Glide.with(v.getContext()).load(R.drawable.logo_512_512).into(img_logo);
 
     }
 
@@ -221,6 +239,7 @@ public class FragmentLogin extends Fragment implements LoginContract.ViewModel,G
 
         Log.e(TAG, "start login");
 
+        showProgress();
         Map<String, String> map = new HashMap();
         //map.put("access_token", prefs.getLToken());
         map.put("login", login);
@@ -238,18 +257,19 @@ public class FragmentLogin extends Fragment implements LoginContract.ViewModel,G
 
                     @Override
                     public void onError(Throwable e) {
-
+                        hideProgress();
                     }
 
                     @Override
                     public void onNext(ResponseBody responseBody) {
+                        hideProgress();
                         try {
                             String resp = responseBody.string();
                             Gson gson = new Gson();
-                            if(resp.contains("err")){
-                                Meta meta = gson.fromJson(resp, Meta.class);
-                                String err = meta.getMeta().getErrorMessage();
-                                Toast.makeText(context,
+                            if(resp.contains("eror")){
+                                //Meta meta = gson.fromJson(resp, Meta.class);
+                                //String err = meta.getMeta().getErrorMessage();
+                                Toast.makeText(activity,
                                         context.getResources().getString(R.string.error_login_or_password), Toast.LENGTH_SHORT).show();
                                 //view.checkLogin();
                             }else {
@@ -274,6 +294,28 @@ public class FragmentLogin extends Fragment implements LoginContract.ViewModel,G
                                 prefs.setCountFollowers(c);
                                 prefs.setCountMedia(vkUserInfo.getmData().getmCounts().getMedia());
                                 activity.checkLogin();
+
+                                Long current = System.currentTimeMillis();
+
+                                SimpleDateFormat df = new SimpleDateFormat("ss:mm:HH dd-MM-yyyy", Locale.getDefault());
+
+
+                                Calendar cal = Calendar.getInstance();
+
+                                cal.add(Calendar.DAY_OF_YEAR, 1);
+                                cal.set(Calendar.HOUR_OF_DAY, 7);
+                                cal.set(Calendar.MINUTE, 1);
+                                //cal.add(Calendar.MINUTE, 1);
+
+                                String current_day_and_month = df.format(cal.getTimeInMillis());
+                                Log.e(TAG, "add day to date current = " + current_day_and_month);
+
+                                Intent alarmIntent = new Intent(activity, AlarmReceiver.class);
+                                PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, ALARM_REQUEST_CODE, alarmIntent, 0);
+                                AlarmManager manager = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);//get instance of alarm manager
+                                manager.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pendingIntent);//set alarm manager with entered timer by converting into milliseconds
+
+
                             }
                             String ds = resp;
                         } catch (Exception e) {

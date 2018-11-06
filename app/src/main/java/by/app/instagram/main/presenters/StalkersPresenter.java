@@ -52,6 +52,8 @@ public class StalkersPresenter implements StalkersContract.Presenter{
     ValueEventListener listenerProgress;
     ValueEventListener listenerStalkers;
 
+    boolean isFirst = true;
+
     Progress progressO;
 
     List<StalkersObject> list_all = new ArrayList<>();
@@ -201,7 +203,6 @@ public class StalkersPresenter implements StalkersContract.Presenter{
                           StalkersObject object = usersSnapshot.getValue(StalkersObject.class);
                           if(object != null)
                           {
-                              //if(list_all.size() < 20) list_all.add(object);
                               list_all.add(object);
                           }
 
@@ -222,7 +223,35 @@ public class StalkersPresenter implements StalkersContract.Presenter{
                       _view.setRecycler(sl);
 
                       _view.hideProgress();
-                  }
+                  }else if(isFirst){
+                      isFirst = false;
+                      list_all.clear();
+                      for(DataSnapshot usersSnapshot : dataSnapshot.getChildren()){
+
+                          StalkersObject object = usersSnapshot.getValue(StalkersObject.class);
+                          if(object != null)
+                          {
+                              //if(list_all.size() < 20) list_all.add(object);
+                              list_all.add(object);
+                          }
+
+                      }
+
+                      if(list_all != null){
+                          Collections.sort(list_all, StalkersObject.StalkersComparator);
+                      }
+
+                      List<StalkersObject> sl = new ArrayList<>();
+                      if(list_all.size() > 20){
+
+
+                          for(int i = 0; i < 20; i++){
+                              sl.add(list_all.get(i));
+                          }
+                      }
+                      _view.setRecycler(sl);
+
+                  }else getFromRealm();
             }
 
             @Override

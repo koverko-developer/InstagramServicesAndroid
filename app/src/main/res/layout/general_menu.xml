@@ -12,11 +12,10 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/img_header"
             android:layout_width="match_parent"
             android:layout_height="150dp"
-            android:scaleType="centerCrop"
-            app:srcCompat="@drawable/ic_launcher_background" />
+            android:scaleType="centerCrop" />
 
         <RelativeLayout
             android:id="@+id/rel_profile"
@@ -26,8 +25,8 @@
 
             <ImageView
                 android:id="@+id/menu_img_profile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_marginLeft="16dp"
                 app:srcCompat="@drawable/ic_person_black_24dp" />
 
@@ -53,8 +52,8 @@
 
             <ImageView
                 android:id="@+id/menu_img_feed"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_marginLeft="16dp"
                 app:srcCompat="@drawable/ic_assignment_black_24dp" />
 
@@ -80,8 +79,8 @@
 
             <ImageView
                 android:id="@+id/menu_img_posts"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_marginLeft="16dp"
                 app:srcCompat="@drawable/ic_content_paste_black_24dp" />
 
@@ -107,8 +106,8 @@
 
             <ImageView
                 android:id="@+id/menu_img_audience"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_marginLeft="16dp"
                 app:srcCompat="@drawable/ic_group_black_24dp" />
 
@@ -134,10 +133,11 @@
 
             <ImageView
                 android:id="@+id/menu_img_stalkers"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_marginLeft="16dp"
-                app:srcCompat="@drawable/ic_group_black_24dp" />
+                android:alpha="0.54"
+                app:srcCompat="@drawable/stalker" />
 
             <TextView
                 android:id="@+id/menu_tv_stalkers"
@@ -161,10 +161,11 @@
 
             <ImageView
                 android:id="@+id/menu_img_hashtags"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_marginLeft="16dp"
-                app:srcCompat="@drawable/ic_group_black_24dp" />
+                android:alpha="0.54"
+                app:srcCompat="@drawable/hashtag" />
 
             <TextView
                 android:id="@+id/menu_tv_hashtags"
@@ -195,10 +196,11 @@
 
             <ImageView
                 android:id="@+id/menu_img_hashtags_promotion"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_marginLeft="16dp"
-                app:srcCompat="@drawable/ic_group_black_24dp" />
+                android:alpha="0.54"
+                app:srcCompat="@drawable/tagpopular" />
 
             <TextView
                 android:id="@+id/menu_tv_hashtags_promotion"
@@ -223,10 +225,11 @@
 
             <ImageView
                 android:id="@+id/menu_img_exit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_marginLeft="16dp"
-                app:srcCompat="@drawable/ic_group_black_24dp" />
+                android:alpha="0.54"
+                app:srcCompat="@drawable/exit" />
 
             <TextView
                 android:id="@+id/menu_tv_exit"

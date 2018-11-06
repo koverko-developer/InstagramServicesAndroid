@@ -99,11 +99,12 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
         if (networkInfo != null && networkInfo.isConnected()) {
 
             if(!prefs.getUIFirst()) {
-                getUI();
-                //_view.showSnackUpdate();
+                //getUI();
+                _view.showSnackUpdate();
             }
             else getUI();
 
+            getFromDB();
             addListenerProgress();
             addListenerInfo();
             addListenerTopLikers();
@@ -182,6 +183,9 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
                               VKUserInfo vkUserInfo = new VKUserInfo();
                               Data d = new Data();
                               d.setProfilePicture(info.getPicture());
+                              prefs.setUIIMG(info.getPicture());
+                              prefs.setUIFOLLOWING(info.getFollowingCount());
+                              prefs.setUIFOLLOWERS(info.getFollowerCount());
                               d.setFullName(info.getFullName());
                               d.setUsername(info.getUsername());
                               d.setId(String.valueOf(info.getId()));
@@ -595,6 +599,16 @@ public class UserInfoPresenter implements UserInfoContract.Presenter{
     @Override
     public void initRealm() {
         realm = Realm.getDefaultInstance();
+    }
+
+    @Override
+    public void getFromDB() {
+
+        if(prefs.getUIIMG().equals("0")) return;
+
+        _view.setCardUI(prefs.getUIIMG(), (long) prefs.getUIFOLLOWERS(),
+                (long) prefs.getUIFOLLOWING());
+
     }
 
 

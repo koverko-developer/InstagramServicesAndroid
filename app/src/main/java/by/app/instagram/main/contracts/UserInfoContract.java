@@ -30,6 +30,7 @@ public class UserInfoContract {
         void showNoInternetConnection();
         void showSnackUpdate();
         void initAds();
+        void setCardUI(String _img, Long _followers, Long _following);
     }
 
     public interface Presenter {
@@ -52,6 +53,7 @@ public class UserInfoContract {
         void destroyListener();
         void closeRealm();
         void initRealm();
+        void getFromDB();
     }
 
 }

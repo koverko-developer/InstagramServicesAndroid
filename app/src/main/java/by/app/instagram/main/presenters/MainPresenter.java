@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 import by.app.instagram.api.ApiServices;
-import by.app.instagram.contracts.GeneralContract;
 import by.app.instagram.db.Prefs;
 import by.app.instagram.main.contracts.MainContract;
 import by.app.instagram.model.Meta;
@@ -22,7 +21,6 @@ import by.app.instagram.model.vk.Counts;
 import by.app.instagram.model.vk.Data;
 import by.app.instagram.model.vk.PrivateUserInfo;
 import by.app.instagram.model.vk.VKUserInfo;
-import by.app.instagram.workers.MyWorker;
 import okhttp3.ResponseBody;
 import rx.Observable;
 import rx.Subscriber;
@@ -115,10 +113,10 @@ public class MainPresenter implements MainContract.Presenter{
                             view.checkLogin();
 
 
-                            PeriodicWorkRequest request =
-                                    new PeriodicWorkRequest.Builder(MyWorker.class, 15, TimeUnit.MINUTES)
-                                            .build();
-                            WorkManager.getInstance().enqueue(request);
+//                            PeriodicWorkRequest request =
+//                                    new PeriodicWorkRequest.Builder(MyWorker.class, 15, TimeUnit.MINUTES)
+//                                            .build();
+//                            WorkManager.getInstance().enqueue(request);
 
                             String ds = resp;
                         } catch (Exception e) {

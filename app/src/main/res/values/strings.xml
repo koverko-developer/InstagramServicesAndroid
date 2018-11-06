@@ -85,5 +85,6 @@
     <string name="empty_login">Логин не может быть пустым...</string>
     <string name="empty_password">Пароль не может быть пустым...</string>
     <string name="error_login_or_password">Неверный логин или пароль...</string>
+    <string name="last_update_ui">Последнее обновление данных: \n</string>
 
 </resources>

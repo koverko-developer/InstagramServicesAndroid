@@ -27,6 +27,10 @@ public class Prefs {
     private static final String APP_PREFERENCES_POSTS_f = "posts_first";
     private static final String APP_PREFERENCES_FAVOTITE_HASHTAGS = "favorite_hashtags";
     private static final String APP_PREFERENCES_MY_HASHTAGS = "my_hashtags";
+    private static final String APP_PREFERENCES_LAST_UPDATE = "last_update";
+    private static final String APP_PREFERENCES_UI_IMG = "ui_img";
+    private static final String APP_PREFERENCES_UI_followers = "ui_followers";
+    private static final String APP_PREFERENCES_UI_following = "ui_following";
     private SharedPreferences mSettings;
 
     public Prefs(Context context) {
@@ -202,6 +206,51 @@ public class Prefs {
     public void setMy(String _str){
         SharedPreferences.Editor editor = mSettings.edit();
         editor.putString(APP_PREFERENCES_MY_HASHTAGS, _str);
+        editor.apply();
+    }
+
+    public String getLastUpdate(){
+        return mSettings.getString(APP_PREFERENCES_LAST_UPDATE, "0");
+    }
+
+    public void setLastUpdate(String _str){
+        SharedPreferences.Editor editor = mSettings.edit();
+        editor.putString(APP_PREFERENCES_LAST_UPDATE, _str);
+        editor.apply();
+    }
+    public void clearPrefs(){
+        SharedPreferences.Editor editor = mSettings.edit();
+        editor.clear();
+        editor.apply();
+    }
+
+    public String getUIIMG(){
+        return mSettings.getString(APP_PREFERENCES_UI_IMG, "0");
+    }
+
+    public void setUIIMG(String _str){
+        SharedPreferences.Editor editor = mSettings.edit();
+        editor.putString(APP_PREFERENCES_UI_IMG, _str);
+        editor.apply();
+    }
+
+    public int getUIFOLLOWERS(){
+        return mSettings.getInt(APP_PREFERENCES_UI_followers, 0);
+    }
+
+    public void setUIFOLLOWERS(int _str){
+        SharedPreferences.Editor editor = mSettings.edit();
+        editor.putInt(APP_PREFERENCES_UI_followers, _str);
+        editor.apply();
+    }
+
+    public int getUIFOLLOWING(){
+        return mSettings.getInt(APP_PREFERENCES_UI_following, 0);
+    }
+
+    public void setUIFOLLOWING(int _str){
+        SharedPreferences.Editor editor = mSettings.edit();
+        editor.putInt(APP_PREFERENCES_UI_following, _str);
         editor.apply();
     }
 
