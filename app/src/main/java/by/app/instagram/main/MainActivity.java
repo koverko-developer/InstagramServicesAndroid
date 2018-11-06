@@ -299,6 +299,7 @@ public class MainActivity extends AppCompatActivity
     public void ads() {
         Random random = new Random();
         int i = random.nextInt(4);
+        Log.e(TAG, "ads == " + i);
         if(i == 1){
             MobileAds.initialize(this, getResources().getString(R.string.ad_id1));
             interstitial = new InterstitialAd(this);

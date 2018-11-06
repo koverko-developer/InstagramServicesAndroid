@@ -306,7 +306,7 @@ public class UserInfoFragment extends Fragment implements UserInfoContract.ViewM
     @Override
     public void initAds() {
         try {
-            MobileAds.initialize(getContext(), getResources().getString(R.string.ad_id2));
+            MobileAds.initialize(v.getContext(), getResources().getString(R.string.ad_id2));
             mAdView = (AdView) v.findViewById(R.id.adView);
             AdRequest adRequest = new AdRequest.Builder()
                     .build();

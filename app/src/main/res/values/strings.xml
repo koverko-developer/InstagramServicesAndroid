@@ -1,12 +1,12 @@
 <resources>
 
-    <string name="ad_id1">ca-app-pub-1774878275661991~2465815506</string>
+    <string name="ad_id1">ca-app-pub-1774878275661991~7071836972</string>
     <string name="ad_id2">ca-app-pub-1563785045157371~8952735172</string>
 
-    <string name="ad_ban1">ca-app-pub-1774878275661991/9869377394</string>
+    <string name="ad_ban1">ca-app-pub-1774878275661991/8209782537</string>
     <string name="ad_ban2">ca-app-pub-1563785045157371/5532774039</string>
 
-    <string name="ad_inter1">ca-app-pub-1774878275661991/5348921720</string>
+    <string name="ad_inter1">ca-app-pub-1774878275661991/6030218041</string>
     <string name="ad_inter2">ca-app-pub-1563785045157371/5526950894</string>
 
     <string name="app_name">Instagram analytics</string>

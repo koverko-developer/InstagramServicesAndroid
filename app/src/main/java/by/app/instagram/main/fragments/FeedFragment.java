@@ -83,7 +83,7 @@ public class FeedFragment extends Fragment implements FeedContract.View, View.On
         initCards();
         initAppBar();
         initFilter();
-
+        initAds();
         if(_presenter == null ) _presenter = new FeedPresenter(this, v.getContext());
         return v;
     }
@@ -342,7 +342,7 @@ public class FeedFragment extends Fragment implements FeedContract.View, View.On
 
     @Override
     public void initAds() {
-        MobileAds.initialize(getContext(), getResources().getString(R.string.ad_id1));
+        MobileAds.initialize(v.getContext(), getResources().getString(R.string.ad_id1));
         mAdView = (AdView) v.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
                 .build();

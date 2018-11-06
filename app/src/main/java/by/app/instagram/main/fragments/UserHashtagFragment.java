@@ -77,6 +77,7 @@ public class UserHashtagFragment extends Fragment implements UserHashtagContract
 
         initAppBar();
         initLists();
+        initAds();
 
         if(_presenter == null) _presenter = new HashtagsUserPresenter(v.getContext(), this);
 
@@ -199,7 +200,7 @@ public class UserHashtagFragment extends Fragment implements UserHashtagContract
 
     @Override
     public void initAds() {
-        MobileAds.initialize(getContext(), getResources().getString(R.string.ad_id1));
+        MobileAds.initialize(v.getContext(), getResources().getString(R.string.ad_id1));
         mAdView = (AdView) v.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
                 .build();

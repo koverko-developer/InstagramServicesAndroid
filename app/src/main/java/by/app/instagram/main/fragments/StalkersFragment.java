@@ -72,6 +72,7 @@ public class StalkersFragment extends Fragment implements StalkersContract.View{
         initCardH();
         initAppBar();
         initFilter();
+        initAds();
 
         if(_presenter == null) _presenter = new StalkersPresenter(this, v.getContext());
 
@@ -261,7 +262,7 @@ public class StalkersFragment extends Fragment implements StalkersContract.View{
 
     @Override
     public void initAds() {
-        MobileAds.initialize(getContext(), getResources().getString(R.string.ad_id1));
+        MobileAds.initialize(v.getContext(), getResources().getString(R.string.ad_id1));
         mAdView = (AdView) v.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
                 .build();
