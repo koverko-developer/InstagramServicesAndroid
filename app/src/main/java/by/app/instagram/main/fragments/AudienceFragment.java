@@ -62,7 +62,7 @@ public class AudienceFragment extends Fragment implements AudienceContract.View,
 
     CardView progress;
 
-    ImageView img_menu, img_filter;
+    ImageView img_menu, img_filter, img;
     TextView tv_fragment_title;
 
     FilterView filter;
@@ -97,6 +97,7 @@ public class AudienceFragment extends Fragment implements AudienceContract.View,
     @Override
     public void initCardH() {
 
+        img = (ImageView) v.findViewById(R.id.img_1);
         tv_empty_list = v.findViewById(R.id.tv_empty_list);
         card_graph_g = v.findViewById(R.id.card_graph_g);
         card_list_g = v.findViewById(R.id.card_list_g);
@@ -399,7 +400,7 @@ public class AudienceFragment extends Fragment implements AudienceContract.View,
     @Override
     public void showSnackUpdate() {
 
-        Snackbar snackbar = Snackbar.make(img_menu,
+        Snackbar snackbar = Snackbar.make(img,
                 getResources().getString(R.string.update_data), 6000);
         snackbar.setAction(getResources().getString(R.string.yes), new View.OnClickListener() {
             @Override
