@@ -3,6 +3,7 @@ package by.app.instagram.main.fragments;
 import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -49,7 +50,7 @@ public class UserInfoFragment extends Fragment implements UserInfoContract.ViewM
 
     TextView tv_followed_by, tv_follows, tv_count_photo, tv_count_slider, tv_count_video,
              tv_count_likes, tv_count_comments, tv_count_views;
-    ImageView img_ava, img_menu, img_math;
+    ImageView img_ava, img_menu, img_math, img_share;
     CardView card_h, card_2, card_3, card_4, card_5;
     RecyclerView rec_top_likers, rec_top_comments;
     CardView progress;
@@ -99,6 +100,17 @@ public class UserInfoFragment extends Fragment implements UserInfoContract.ViewM
 
     @Override
     public void initCardViewUI() {
+        img_share = (ImageView) v.findViewById(R.id.img_right);
+        img_share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.text_share));
+                sendIntent.setType("text/plain");
+                startActivity(sendIntent);
+            }
+        });
         img_math = (ImageView) v.findViewById(R.id.img_math);
         img_menu = v.findViewById(R.id.img_menu);
         img_menu.setOnClickListener(new View.OnClickListener() {

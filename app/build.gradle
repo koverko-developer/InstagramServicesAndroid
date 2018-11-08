@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'key'
+            keyPassword '3057686Kowerko1'
+            storeFile file('/home/mobi-app/development/project/download music 2018/key.jks')
+            storePassword '3057686Kowerko1'
+        }
+    }
     compileSdkVersion 27
     defaultConfig {
         applicationId "by.anikamobiappstudio.instanalytics"
@@ -14,22 +22,25 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
+        }
+        debug {
+            signingConfig signingConfigs.config
         }
     }
-
-
-
     android {
         compileOptions {
             sourceCompatibility JavaVersion.VERSION_1_8
             targetCompatibility JavaVersion.VERSION_1_8
         }
     }
+    productFlavors {
+    }
 }
 
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
@@ -50,6 +61,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-ads:11.8.0'
     implementation 'com.nex3z:flow-layout:1.2.4'
     implementation 'android.arch.work:work-runtime:1.0.0-alpha02'
+    implementation 'org.jsoup:jsoup:1.11.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.4.0'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'

@@ -86,5 +86,6 @@
     <string name="empty_password">Пароль не может быть пустым...</string>
     <string name="error_login_or_password">Неверный логин или пароль...</string>
     <string name="last_update_ui">Последнее обновление данных: \n</string>
+    <string name="text_share">Узнай статистику своего аккаунта Instagram, получай больше лайков и подписчиков! https://play.google.com/store/apps/details?id=by.anikamobiappstudio.instanalytics</string>
 
 </resources>

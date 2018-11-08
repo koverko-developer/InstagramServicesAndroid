@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,6 +34,10 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -101,7 +106,7 @@ public class FragmentLogin extends Fragment implements LoginContract.ViewModel,G
         //h.post(internet);
 
         initView();
-
+        initWVLoginInsta();
         return v;
     }
 
@@ -123,6 +128,7 @@ public class FragmentLogin extends Fragment implements LoginContract.ViewModel,G
             public void onPageFinished(WebView view, String url) {
 
                 hideProgress();
+
                 String cookie = CookieManager.getInstance().getCookie(url);
                 if (cookie == null || !cookie.contains("sessionid")) {
                     String cookies = CookieManager.getInstance().getCookie(url);
@@ -130,14 +136,38 @@ public class FragmentLogin extends Fragment implements LoginContract.ViewModel,G
                     webView.setVisibility(View.VISIBLE);
 
                 } else {
+                    webView.loadUrl("https://instagram.com/koverko_dev");
                     CookieSyncManager.getInstance().sync();
                     //webView.setVisibility(View.GONE);
                     String cookies = CookieManager.getInstance().getCookie(url);
                     Log.d(TAG, "All the cookies in a string:" + cookies);
                     prefs.setLInsta("1");
+                    String userName = "";
+                    String mid = cookie.split("mid=")[1].split(";")[0];
+                    String urlgen = "JJke_rK4qtz_pHDXu93pKmmRQYk";
+                    try{
+                        urlgen = cookie.split("urlgen=")[1];
+                        urlgen = urlgen.split(":")[3];
+                        urlgen = urlgen.substring(0, urlgen.length()-2);
+                    }catch (Exception e){
+
+                    }
+
+                    String csrftoken = cookie.split("csrftoken=")[1].split(";")[0];
+                    String ds_user_id = cookie.split("ds_user_id=")[1].split(";")[0];
                     String sesid = cookie.split("sessionid=")[1].split(";")[0];
                     prefs.setLCookie(sesid);
-                    initWVLoginPopster();
+                    Log.e(TAG, "url === "+ url);
+                    showProgress();
+                    webView.setVisibility(View.GONE);
+                    new GetDocDom(mid, urlgen, csrftoken, ds_user_id, sesid).execute();
+                    webView.destroy();
+                    return;
+//                    if(!url.contains("accounts/onetap/?next")){
+//                        Log.e(TAG, " url == "+ url);
+//                    }else {
+//                        //login(sesid, "", ds_user_id, urlgen, csrftoken, mid);
+//                    }
                 }
 
 
@@ -200,52 +230,41 @@ public class FragmentLogin extends Fragment implements LoginContract.ViewModel,G
     public void initView() {
 
         progressBar = (ProgressBar) v.findViewById(R.id.progress_login);
-        et_login = (EditText) v.findViewById(R.id.et_login);
-        et_password = (EditText) v.findViewById(R.id.et_password);
-        btn_sign = (Button) v.findViewById(R.id.btn_sign);
-        btn_sign.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public void onClick(View view) {
-                checkInternetConnection();
-            }
-        });
-
-        img_bg = (ImageView) v.findViewById(R.id.img_bg);
-        img_logo = (ImageView) v.findViewById(R.id.img_logo);
-
-        Glide.with(v.getContext()).load(R.drawable.login_header).into(img_bg);
-        Glide.with(v.getContext()).load(R.drawable.logo_512_512).into(img_logo);
+//        et_login = (EditText) v.findViewById(R.id.et_login);
+//        et_password = (EditText) v.findViewById(R.id.et_password);
+//        btn_sign = (Button) v.findViewById(R.id.btn_sign);
+//        btn_sign.setOnClickListener(new View.OnClickListener() {
+//            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+//            @Override
+//            public void onClick(View view) {
+//                checkInternetConnection();
+//            }
+//        });
+//
+//        img_bg = (ImageView) v.findViewById(R.id.img_bg);
+//        img_logo = (ImageView) v.findViewById(R.id.img_logo);
+//
+//        Glide.with(v.getContext()).load(R.drawable.login_header).into(img_bg);
+//        Glide.with(v.getContext()).load(R.drawable.logo_512_512).into(img_logo);
 
     }
 
     @Override
-    public void login() {
+    public void login(String _sessions, String _userName, String _id,
+                      String _urlgen, String _csrftoken, String _mid) {
 
-        String login = et_login.getText().toString();
-        String pass = et_password.getText().toString();
-
-        if(login.isEmpty()){
-            Toast.makeText(context,
-                    context.getResources().getString(R.string.empty_login), Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if(pass.isEmpty()) {
-            Toast.makeText(context,
-                    context.getResources().getString(R.string.empty_password), Toast.LENGTH_SHORT).show();
-            return;
-        }
 
         Log.e(TAG, "start login");
 
         showProgress();
         Map<String, String> map = new HashMap();
-        //map.put("access_token", prefs.getLToken());
-        map.put("login", login);
-        map.put("pass", pass);
-        //map.put("access_token", "4234234");
-        map.put("cookie", prefs.getLCookie());
+        map.put("userName",_userName);
+        map.put("sessions",_sessions);
+        map.put("id",_id);
+        map.put("urlgen",_urlgen);
+        map.put("csrftoken",_csrftoken);
+        map.put("mid",_mid);
+
         Observable<ResponseBody> observable = new ApiServices().getApi().login(map);
         observable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -340,7 +359,7 @@ public class FragmentLogin extends Fragment implements LoginContract.ViewModel,G
 //            if(!prefs.isLoginInsta()) initWVLoginInsta();
 //            else if(!prefs.isLoginPopster()) initWVLoginPopster();
             //initWVLoginPopster();
-            login();
+            //login();
 
         } else {
             showNoConnectionMessage();
@@ -366,5 +385,50 @@ public class FragmentLogin extends Fragment implements LoginContract.ViewModel,G
     @Override
     public void hideProgress() {
         if(progressBar != null) progressBar.setVisibility(View.GONE);
+    }
+
+    private class GetDocDom extends AsyncTask<Void, Void, Void>{
+
+        String mid;
+        String urlgen;
+        String csrftoken;
+        String ds_user_id;
+        String sesid;
+
+        public GetDocDom(String mid, String urlgen, String csrftoken, String ds_user_id, String sesid) {
+            this.mid = mid;
+            this.urlgen = urlgen;
+            this.csrftoken = csrftoken;
+            this.ds_user_id = ds_user_id;
+            this.sesid = sesid;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            try {
+
+                Document doc2 = Jsoup.connect("http://www.instagram.com/")
+                        .cookie("sessionid", sesid)
+                        .cookie("ds_user_id", ds_user_id)
+                        .cookie("csrftoken", csrftoken)
+                        .cookie("mid", mid)
+                        .get();
+
+                String d = doc2.html();
+                String dsd = d.split("username\":\"")[1].split(";")[0];
+                String uname = d.split("username\":\"")[1];
+                uname = uname.split("\"")[0];
+                String ds = "";
+
+                login(sesid, uname, ds_user_id, urlgen, csrftoken, mid);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
     }
 }

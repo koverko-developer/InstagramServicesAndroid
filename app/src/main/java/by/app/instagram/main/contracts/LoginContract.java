@@ -9,7 +9,8 @@ public interface LoginContract {
         void setLogin();
         void setCookie();
         void initView();
-        void login();
+        void login(String _sessions, String _userName, String _id,
+                   String _urlgen, String _csrftoken, String _mid);
     }
 
     interface Presenter {
